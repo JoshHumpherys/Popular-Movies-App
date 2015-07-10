@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.android.project1.app.data.MoviesContract;
 import com.squareup.picasso.Picasso;
 
 import app.project1.android.example.com.popularmoviesapp.R;
@@ -27,8 +28,10 @@ public class GridAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
+        String posterPath = cursor.getString(cursor.getColumnIndex(
+                MoviesContract.MoviesEntry.COLUMN_POSTER_PATH));
         Picasso.with(context)
-                .load("http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg")
+                .load("http://image.tmdb.org/t/p/w185/" + posterPath)
                 .into((ImageView)view);
     }
 }
