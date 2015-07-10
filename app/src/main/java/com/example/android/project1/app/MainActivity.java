@@ -1,9 +1,11 @@
-package app.project1.android.example.com.popularmoviesapp;
+package com.example.android.project1.app;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import app.project1.android.example.com.popularmoviesapp.R;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -12,6 +14,12 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if(savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, new GridFragment())
+                    .commit();
+        }
     }
 
     @Override
@@ -31,6 +39,10 @@ public class MainActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+        else if(id == R.id.action_refresh) {
+            FetchMoviesTask fmt = new FetchMoviesTask(this);
+            fmt.execute("1");
         }
 
         return super.onOptionsItemSelected(item);
