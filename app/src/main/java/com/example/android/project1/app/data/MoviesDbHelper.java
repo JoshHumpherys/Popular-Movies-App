@@ -26,7 +26,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 MoviesEntry._ID + " INTEGER PRIMARY KEY," +
                 MoviesEntry.COLUMN_ADULT + " INTEGER NOT NULL, " +
                 MoviesEntry.COLUMN_BACKDROP_PATH + " INTEGER NOT NULL, " +
-                MoviesEntry.COLUMN_ID + " INTEGER NOT NULL, " +
+                MoviesEntry.COLUMN_ID + " INTEGER NOT NULL UNIQUE, " +
                 MoviesEntry.COLUMN_ORIGINAL_LANGUAGE + " TEXT NOT NULL, " +
                 MoviesEntry.COLUMN_ORIGINAL_TITLE + " TEXT NOT NULL, " +
                 MoviesEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
@@ -36,8 +36,8 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 MoviesEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
                 MoviesEntry.COLUMN_VIDEO + " INTEGER NOT NULL, " +
                 MoviesEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL, " +
-                MoviesEntry.COLUMN_VOTE_COUNT + " REAL NOT NULL" +
-                ");";
+                MoviesEntry.COLUMN_VOTE_COUNT + " REAL NOT NULL, " +
+                " UNIQUE (" + MoviesEntry.COLUMN_ID + ") ON CONFLICT REPLACE);";
 
         db.execSQL(SQL_CREATE_MOVIE_TABLE);
     }
