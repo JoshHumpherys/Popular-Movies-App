@@ -70,7 +70,9 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridViewHolder
         return new GridViewHolder(view, new GridViewHolder.OnViewClickListener() {
             @Override
             public void onViewClick(ImageView imageView, int position) {
-                Toast.makeText(mContext, "" + position,
+                mCursor.moveToPosition(position);
+                String movieName = mCursor.getString(mCursor.getColumnIndex(MoviesContract.MoviesEntry.COLUMN_TITLE));
+                Toast.makeText(mContext, "" + movieName,
                         Toast.LENGTH_SHORT).show();
             }
         });
