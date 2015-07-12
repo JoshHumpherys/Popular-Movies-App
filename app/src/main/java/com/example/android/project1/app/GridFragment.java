@@ -1,5 +1,6 @@
 package com.example.android.project1.app;
 
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -24,6 +25,9 @@ import app.project1.android.example.com.popularmoviesapp.R;
 public class GridFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final int LOADER_ID = 0;
+
+    public static final int GRID_NUM_COLUMNS_PORTRAIT = 3;
+    public static final int GRID_NUM_COLUMNS_LAND = 5;
 
     private GridView mGridView;
     private GridAdapter mGridAdapter;
@@ -86,7 +90,13 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
         mRecyclerView.setAdapter(mGridAdapter);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        if(getActivity().getResources().getConfiguration().orientation ==
+                Configuration.ORIENTATION_PORTRAIT) {
+            mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), GRID_NUM_COLUMNS_PORTRAIT));
+        }
+        else {
+            mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), GRID_NUM_COLUMNS_LAND));
+        }
         mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {

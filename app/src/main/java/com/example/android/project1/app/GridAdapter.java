@@ -83,7 +83,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridViewHolder
         gridViewHolder.setPosition(i);
         String posterPath = mDataSet.get(i);
         Picasso.with(mContext)
-                .load("http://image.tmdb.org/t/p/w780/" + posterPath)
+                .load("http://image.tmdb.org/t/p/w500/" + posterPath)
                 .into(gridViewHolder.mImageView);
     }
 
