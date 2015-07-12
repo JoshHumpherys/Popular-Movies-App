@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.android.project1.app.data.MoviesContract;
 import com.squareup.picasso.Picasso;
@@ -66,15 +67,22 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridViewHolder
     public GridViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
         View view = inflater.inflate(R.layout.grid_imageview, viewGroup, false);
-        return new GridViewHolder(view);
+        return new GridViewHolder(view, new GridViewHolder.OnViewClickListener() {
+            @Override
+            public void onViewClick(ImageView imageView, int position) {
+                Toast.makeText(mContext, "" + position,
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
     public void onBindViewHolder(GridViewHolder gridViewHolder, int i) {
+        gridViewHolder.setPosition(i);
         String posterPath = mDataSet.get(i);
         Picasso.with(mContext)
                 .load("http://image.tmdb.org/t/p/w780/" + posterPath)
-                .into(gridViewHolder.imageView);
+                .into(gridViewHolder.mImageView);
     }
 
     @Override
@@ -112,11 +120,29 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridViewHolder
         return oldCursor;
     }
 
-    public class GridViewHolder extends RecyclerView.ViewHolder {
-        protected ImageView imageView;
-        public GridViewHolder(View view) {
+    public static class GridViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        protected ImageView mImageView;
+        protected OnViewClickListener mListener;
+        protected int mPosition;
+
+        @Override
+        public void onClick(View v) {
+            mListener.onViewClick(mImageView, mPosition);
+        }
+
+        public GridViewHolder(View view, OnViewClickListener listener) {
             super(view);
-            imageView = (ImageView)view.findViewById(R.id.imageview);
+            mImageView = (ImageView)view.findViewById(R.id.imageview);
+            mListener = listener;
+            view.setOnClickListener(this);
+        }
+
+        public void setPosition(int position) {
+            mPosition = position;
+        }
+
+        public static interface OnViewClickListener {
+            void onViewClick(ImageView imageView, int position);
         }
     }
 }
