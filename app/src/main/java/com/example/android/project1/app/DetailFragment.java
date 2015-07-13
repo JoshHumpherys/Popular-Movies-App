@@ -1,22 +1,46 @@
 package com.example.android.project1.app;
 
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.android.project1.app.data.MoviesContract.MoviesEntry;
+
 import app.project1.android.example.com.popularmoviesapp.R;
 
 /**
  * Created by Admin-HHE on 7/13/2015.
  */
-public class DetailFragment extends Fragment {
+public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final String DETAIL_URI = "URI";
     private Uri mUri;
+
+    private static final int DETAIL_FRAGMENT_LOADER_ID = 0;
+
+    private static final String[] DETAIL_COLUMNS = {
+            MoviesEntry.TABLE_NAME + "." + MoviesEntry._ID,
+            MoviesEntry.COLUMN_POSTER_PATH,
+            MoviesEntry.COLUMN_ORIGINAL_TITLE,
+            MoviesEntry.COLUMN_OVERVIEW,
+            MoviesEntry.COLUMN_VOTE_AVERAGE,
+            MoviesEntry.COLUMN_RELEASE_DATE
+    };
+
+    public static final int COL_ID = 0;
+    public static final int COL_POSTER = 1;
+    public static final int COL_TITLE = 2;
+    public static final int COL_OVERVIEW = 3;
+    public static final int COL_VOTE_AVERAGE = 4;
+    public static final int COL_RELEASE_DATE = 5;
 
     private ImageView poster;
     private TextView title, overview, voteAverage, releaseDate;
@@ -40,6 +64,31 @@ public class DetailFragment extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        getLoaderManager().initLoader(DETAIL_FRAGMENT_LOADER_ID, null, this);
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        if(mUri != null) {
+            return new CursorLoader(
+                    getActivity(),
+                    mUri,
+                    null,
+                    null,
+                    null,
+                    null);
+        }
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 }
