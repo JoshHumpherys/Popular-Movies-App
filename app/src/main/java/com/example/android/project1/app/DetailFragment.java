@@ -23,7 +23,9 @@ import app.project1.android.example.com.popularmoviesapp.R;
  */
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final String DETAIL_URI = "URI";
+    public static final String DETAIL_CURSOR_POSITION = "position";
     private Uri mUri;
+    private int mPosition;
 
     private static final int DETAIL_FRAGMENT_LOADER_ID = 0;
 
@@ -52,6 +54,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         Bundle args = getArguments();
         if(args != null) {
             mUri = args.getParcelable(DETAIL_URI);
+            mPosition = args.getInt(DETAIL_CURSOR_POSITION);
         }
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
@@ -85,7 +88,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if(data != null && data.moveToFirst()) {
+        if(data != null && data.moveToPosition(mPosition)) {
 //            String posterPath = data.getString(COL_POSTER);
             String posterPath = data.getString(data.getColumnIndex(MoviesEntry.COLUMN_POSTER_PATH));
             Picasso.with(getActivity())

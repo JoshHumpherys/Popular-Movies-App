@@ -59,6 +59,7 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
         Uri contentUri = MoviesContract.MoviesEntry.CONTENT_URI;
         Intent intent = new Intent(this, DetailActivity.class);
         intent.setData(contentUri);
+        intent.putExtra(DetailFragment.DETAIL_CURSOR_POSITION, position);
         startActivity(intent);
     }
 }
