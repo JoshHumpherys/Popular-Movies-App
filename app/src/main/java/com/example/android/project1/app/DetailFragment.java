@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.project1.app.data.MoviesContract.MoviesEntry;
+import com.squareup.picasso.Picasso;
 
 import app.project1.android.example.com.popularmoviesapp.R;
 
@@ -84,7 +85,23 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if(data != null && data.moveToFirst()) {
+//            String posterPath = data.getString(COL_POSTER);
+            String posterPath = data.getString(data.getColumnIndex(MoviesEntry.COLUMN_POSTER_PATH));
+            Picasso.with(getActivity())
+                    .load("http://image.tmdb.org/t/p/w185/" + posterPath)
+                    .into(poster);
 
+//            title.setText("title = " + data.getString(COL_TITLE));
+//            overview.setText("overview = " + data.getString(COL_OVERVIEW));
+//            voteAverage.setText("vote average = " + Float.toString(data.getFloat(COL_VOTE_AVERAGE)));
+//            releaseDate.setText("release date = " + data.getString(COL_RELEASE_DATE));
+
+            title.setText(data.getString(data.getColumnIndex(MoviesEntry.COLUMN_TITLE)));
+            overview.setText(data.getString(data.getColumnIndex(MoviesEntry.COLUMN_OVERVIEW)));
+            voteAverage.setText(Float.toString(data.getFloat(data.getColumnIndex(MoviesEntry.COLUMN_VOTE_AVERAGE))));
+            releaseDate.setText(data.getString(data.getColumnIndex(MoviesEntry.COLUMN_RELEASE_DATE)));
+        }
     }
 
     @Override
