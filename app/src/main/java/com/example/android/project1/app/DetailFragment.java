@@ -92,7 +92,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 //            String posterPath = data.getString(COL_POSTER);
             String posterPath = data.getString(data.getColumnIndex(MoviesEntry.COLUMN_POSTER_PATH));
             Picasso.with(getActivity())
-                    .load("http://image.tmdb.org/t/p/w185/" + posterPath)
+                    .load("http://image.tmdb.org/t/p/w342/" + posterPath)
                     .into(poster);
 
 //            title.setText("title = " + data.getString(COL_TITLE));

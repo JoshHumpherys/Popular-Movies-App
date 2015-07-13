@@ -47,7 +47,7 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
             return true;
         } else if (id == R.id.action_refresh) {
             FetchMoviesTask fmt = new FetchMoviesTask(this);
-            fmt.execute("1");
+            fmt.execute("40");
         }
 
         return super.onOptionsItemSelected(item);

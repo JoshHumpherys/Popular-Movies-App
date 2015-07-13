@@ -31,6 +31,8 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
 
     private final Context mContext;
 
+    private String lastParam;
+
     public FetchMoviesTask(Context context) {
         mContext = context;
     }
@@ -126,6 +128,8 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
             pageQuery="1";
         }
 
+        lastParam = pageQuery;
+
         // Declare outside try/catch block to close in finally block
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
@@ -139,34 +143,40 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
             final String PAGE_PARAM = "page";
             final String API_KEY_PARAM = "api_key";
 
-            Uri builtUri = Uri.parse(MOVIES_BASE_URL).buildUpon()
-                    .appendQueryParameter(PAGE_PARAM, pageQuery)
-                    .appendQueryParameter(API_KEY_PARAM, API_KEY)
-                    .build();
+            int maxPage = Integer.parseInt(pageQuery);
+            for(int i = 1; i < maxPage; i++) {
+                Uri builtUri = Uri.parse(MOVIES_BASE_URL).buildUpon()
+                        .appendQueryParameter(PAGE_PARAM, Integer.toString(i))
+                        .appendQueryParameter(API_KEY_PARAM, API_KEY)
+                        .build();
 
-            URL url = new URL(builtUri.toString());
+                URL url = new URL(builtUri.toString());
 
-            // Create request and open connection
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.connect();
+                // Create request and open connection
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
 
-            // Set up a BufferedReader to read the InputStream
-            InputStream inputStream = urlConnection.getInputStream();
-            reader = new BufferedReader(new InputStreamReader(inputStream));
+                // Set up a BufferedReader to read the InputStream
+                InputStream inputStream = urlConnection.getInputStream();
+                reader = new BufferedReader(new InputStreamReader(inputStream));
 
-            // Create raw JSON string by iterating the BufferedReader
-            String line;
-            rawJsonStr = "";
-            while((line = reader.readLine()) != null) {
-                rawJsonStr += line;
+                // Create raw JSON string by iterating the BufferedReader
+                String line;
+                rawJsonStr = "";
+                while ((line = reader.readLine()) != null) {
+                    rawJsonStr += line;
+                }
+
+                Log.v(LOG_TAG, "Raw JSON string pulled with URL " + url + ": " + rawJsonStr);
+                insertJsonIntoDatabase(rawJsonStr, pageQuery);
             }
-
-            Log.v(LOG_TAG, "Raw JSON string pulled with URL " + url + ": " + rawJsonStr);
-            insertJsonIntoDatabase(rawJsonStr, pageQuery);
         } catch(IOException e) {
             Log.e(LOG_TAG, "Error ", e);
         } catch(JSONException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+        } catch(NumberFormatException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         } finally {
