@@ -1,14 +1,20 @@
 package com.example.android.project1.app;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+
+import com.example.android.project1.app.data.MoviesContract;
 
 import app.project1.android.example.com.popularmoviesapp.R;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements GridFragment.Callback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,12 +45,20 @@ public class MainActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
-        }
-        else if(id == R.id.action_refresh) {
+        } else if (id == R.id.action_refresh) {
             FetchMoviesTask fmt = new FetchMoviesTask(this);
             fmt.execute("1");
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+        //Uri contentUri = MoviesContract.MoviesEntry.buildMovieUri(id);
+        Uri contentUri = MoviesContract.MoviesEntry.CONTENT_URI;
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.setData(contentUri);
+        startActivity(intent);
     }
 }

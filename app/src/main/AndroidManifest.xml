@@ -18,6 +18,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.example.android.project1.app.DetailActivity"
+            android:label="@string/detail_activity_label">
+            <meta-data
+                android:name="android.suport.PARENT_ACTIVITY"
+                android:value="com.example.android.project1.app.MainActivity" />
+        </activity>
         <provider
             android:authorities="com.example.android.project1.app"
             android:name="com.example.android.project1.app.data.MoviesProvider" />

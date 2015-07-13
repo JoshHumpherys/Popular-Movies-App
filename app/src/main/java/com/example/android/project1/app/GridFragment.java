@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import com.example.android.project1.app.data.MoviesContract;
 
@@ -22,10 +21,14 @@ import app.project1.android.example.com.popularmoviesapp.R;
  */
 public class GridFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    public static final int LOADER_ID = 0;
+    public static final int GRID_FRAGMENT_LOADER_ID = 0;
 
     private GridView mGridView;
     private GridAdapter mGridAdapter;
+
+    public interface Callback {
+        public void onItemClick(AdapterView<?> parent, View v, int position, long id);
+    }
 
     public GridFragment() {}
 
@@ -45,8 +48,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                Toast.makeText(getActivity(), "" + position,
-                        Toast.LENGTH_SHORT).show();
+                ((Callback)getActivity()).onItemClick(parent, v, position, id);
             }
         });
 
@@ -55,7 +57,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(LOADER_ID, null, this);
+        getLoaderManager().initLoader(GRID_FRAGMENT_LOADER_ID, null, this);
         super.onActivityCreated(savedInstanceState);
     }
 
