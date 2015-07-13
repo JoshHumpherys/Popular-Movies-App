@@ -44,10 +44,12 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         } else if (id == R.id.action_refresh) {
             FetchMoviesTask fmt = new FetchMoviesTask(this);
             fmt.execute("40");
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
