@@ -1,7 +1,10 @@
 package com.example.android.project1.app;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -63,13 +66,30 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String sortOrder;
+
+        Context context = getActivity();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String sortKey = context.getString(R.string.pref_sort_key);
+        String popularity = context.getString(R.string.pref_sort_popularity);
+        String rating = context.getString(R.string.pref_sort_rating);
+
+        if(sp.getString(sortKey, popularity).equals(popularity)) {
+            sortOrder = MoviesContract.MoviesEntry.COLUMN_POPULARITY + " DESC";
+        }
+        else if(sp.getString(sortKey, rating).equals(rating)) {
+            sortOrder = MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE + " DESC";
+        }
+        else {
+            sortOrder = sp.getString(sortKey, popularity);
+        }
         return new CursorLoader(
                 getActivity(),
                 MoviesContract.MoviesEntry.CONTENT_URI,
                 null,
                 null,
                 null,
-                null);
+                sortOrder);
     }
 
     @Override
