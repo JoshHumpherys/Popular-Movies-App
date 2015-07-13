@@ -31,7 +31,7 @@ public class GridAdapter extends CursorAdapter {
         String posterPath = cursor.getString(cursor.getColumnIndex(
                 MoviesContract.MoviesEntry.COLUMN_POSTER_PATH));
         Picasso.with(context)
-                .load("http://image.tmdb.org/t/p/w185/" + posterPath)
+                .load("http://image.tmdb.org/t/p/w500/" + posterPath)
                 .into((ImageView)view);
     }
 }
