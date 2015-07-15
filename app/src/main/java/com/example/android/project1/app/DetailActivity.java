@@ -18,11 +18,10 @@ public class DetailActivity extends ActionBarActivity {
 
         Intent intent = getIntent();
 
-        int position = intent.getIntExtra(DetailFragment.DETAIL_CURSOR_POSITION, 0);
+        String[] details = intent.getStringArrayExtra(DetailFragment.MOVIE_DETAILS);
 
         Bundle args = new Bundle();
-        args.putParcelable(DetailFragment.DETAIL_URI, intent.getData());
-        args.putInt(DetailFragment.DETAIL_CURSOR_POSITION, position);
+        args.putStringArray(DetailFragment.MOVIE_DETAILS, details);
 
         DetailFragment df = new DetailFragment();
         df.setArguments(args);

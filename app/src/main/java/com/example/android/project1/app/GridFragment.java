@@ -28,9 +28,10 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private GridView mGridView;
     private GridAdapter mGridAdapter;
+    private Cursor mCursor;
 
     public interface Callback {
-        public void onItemClick(AdapterView<?> parent, View v, int position, long id);
+        public void onItemClick(String[] movieDetails);
     }
 
     public GridFragment() {}
@@ -51,7 +52,14 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                ((Callback)getActivity()).onItemClick(parent, v, position, id);
+//                String title = mCursor.getString(mCursor.getColumnIndex(
+//                        MoviesEntry.COLUMN_ORIGINAL_TITLE));
+//                new Toast(getActivity()).makeText(getActivity(), title, Toast.LENGTH_SHORT).show();
+                String[] details = new String[DetailFragment.DETAIL_COLUMNS.length];
+                for(int i = 0; i < details.length; i++) {
+                    details[i] = mCursor.getString(mCursor.getColumnIndex(DetailFragment.DETAIL_COLUMNS[i]));
+                }
+                ((Callback)getActivity()).onItemClick(details);
             }
         });
 
@@ -94,6 +102,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mCursor = data;
         mGridAdapter.swapCursor(data);
     }
 

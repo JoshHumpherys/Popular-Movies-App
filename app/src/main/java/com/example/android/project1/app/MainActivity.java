@@ -1,15 +1,10 @@
 package com.example.android.project1.app;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-
-import com.example.android.project1.app.data.MoviesContract;
 
 import app.project1.android.example.com.popularmoviesapp.R;
 
@@ -56,12 +51,9 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-        //Uri contentUri = MoviesContract.MoviesEntry.buildMovieUri(id);
-        Uri contentUri = MoviesContract.MoviesEntry.CONTENT_URI;
+    public void onItemClick(String[] movieDetails) {
         Intent intent = new Intent(this, DetailActivity.class);
-        intent.setData(contentUri);
-        intent.putExtra(DetailFragment.DETAIL_CURSOR_POSITION, position);
+        intent.putExtra(DetailFragment.MOVIE_DETAILS, movieDetails);
         startActivity(intent);
     }
 }
