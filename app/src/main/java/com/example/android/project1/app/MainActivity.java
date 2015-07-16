@@ -9,16 +9,19 @@ import android.view.MenuItem;
 import app.project1.android.example.com.popularmoviesapp.R;
 
 
-public class MainActivity extends ActionBarActivity implements GridFragment.Callback {
+public class MainActivity extends ActionBarActivity
+        implements GridFragment.Callback, FetchMoviesTask.Callback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        refresh();
+
         if(savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new GridFragment())
+                    .replace(R.id.container, new GridFragment())
                     .commit();
         }
     }
@@ -42,12 +45,16 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         } else if (id == R.id.action_refresh) {
-            FetchMoviesTask fmt = new FetchMoviesTask(this);
-            fmt.execute("40");
+            refresh();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void refresh() {
+        FetchMoviesTask fmt = new FetchMoviesTask(this);
+        fmt.execute("3");
     }
 
     @Override
@@ -55,5 +62,12 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(DetailFragment.MOVIE_DETAILS, movieDetails);
         startActivity(intent);
+    }
+
+    @Override
+    public void onInsertComplete() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, new GridFragment())
+                .commit();
     }
 }

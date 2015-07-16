@@ -33,6 +33,10 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
 
     private String lastParam;
 
+    public interface Callback {
+        public void onInsertComplete();
+    }
+
     public FetchMoviesTask(Context context) {
         mContext = context;
     }
@@ -112,6 +116,9 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
         catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
+        }
+        finally {
+            ((Callback)mContext).onInsertComplete();
         }
     }
 

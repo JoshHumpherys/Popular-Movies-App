@@ -52,9 +52,6 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-//                String title = mCursor.getString(mCursor.getColumnIndex(
-//                        MoviesEntry.COLUMN_ORIGINAL_TITLE));
-//                new Toast(getActivity()).makeText(getActivity(), title, Toast.LENGTH_SHORT).show();
                 String[] details = new String[DetailFragment.DETAIL_COLUMNS.length];
                 for(int i = 0; i < details.length; i++) {
                     details[i] = mCursor.getString(mCursor.getColumnIndex(DetailFragment.DETAIL_COLUMNS[i]));
