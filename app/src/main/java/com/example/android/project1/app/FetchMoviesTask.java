@@ -117,9 +117,6 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         }
-        finally {
-            ((Callback)mContext).onInsertComplete();
-        }
     }
 
     @Override
@@ -199,5 +196,11 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
             }
         }
         return null;
+    }
+
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+        ((Callback)mContext).onInsertComplete();
     }
 }

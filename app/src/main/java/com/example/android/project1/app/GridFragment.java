@@ -63,10 +63,8 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         return rootView;
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onItemInserted() {
         getLoaderManager().initLoader(GRID_FRAGMENT_LOADER_ID, null, this);
-        super.onActivityCreated(savedInstanceState);
     }
 
     @Override

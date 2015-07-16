@@ -12,6 +12,8 @@ import app.project1.android.example.com.popularmoviesapp.R;
 public class MainActivity extends ActionBarActivity
         implements GridFragment.Callback, FetchMoviesTask.Callback {
 
+    private static final String GRID_FRAGMENT_TAG = "GFTAG";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,7 +23,7 @@ public class MainActivity extends ActionBarActivity
 
         if(savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, new GridFragment())
+                    .replace(R.id.container, new GridFragment(), GRID_FRAGMENT_TAG)
                     .commit();
         }
     }
@@ -66,8 +68,6 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onInsertComplete() {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, new GridFragment())
-                .commit();
+        ((GridFragment)getSupportFragmentManager().findFragmentByTag(GRID_FRAGMENT_TAG)).onItemInserted();
     }
 }
