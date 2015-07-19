@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,12 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(savedInstanceState != null) {
+            Log.e(GridFragment.class.getName(), "ASDFASDFASDFASDFASDF IN ONCREATE OF GRIDFRAGMENT SAVEDINSTANCESTATE != NULL --> TRUE");
+        }
+        else {
+            Log.e(GridFragment.class.getName(), "ASDFASDFASDFASDFASDF IN ONCREATE OF GRIDFRAGMENT SAVEDINSTANCESTATE != NULL --> FALSE");
+        }
     }
 
     @Override
@@ -98,6 +105,10 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mCursor = data;
+//        mGridAdapter.swapCursor(data);
+        mGridAdapter.notifyDataSetChanged();
+//        mGridAdapter.notifyDataSetInvalidated();
+//        mGridView.setAdapter(mGridAdapter); // throws NullPointerException
         mGridAdapter.swapCursor(data);
     }
 
