@@ -2,14 +2,13 @@ package com.example.android.project1.app;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import app.project1.android.example.com.popularmoviesapp.R;
 
-
-public class MainActivity extends ActionBarActivity
+public class MainActivity extends AppCompatActivity
         implements GridFragment.Callback, FetchMoviesTask.Callback {
 
     private static final String GRID_FRAGMENT_TAG = "GFTAG";
