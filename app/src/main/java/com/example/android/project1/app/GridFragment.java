@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,7 +86,8 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
             mGridAdapter.swapCursor(matrixCursor);
         }
         else {
-            Log.v(GridFragment.class.getName(), "onActivityCreated savedInstanceState == null");
+            FetchMoviesTask fmt = new FetchMoviesTask(getActivity());
+            fmt.execute("3");
         }
     }
 
