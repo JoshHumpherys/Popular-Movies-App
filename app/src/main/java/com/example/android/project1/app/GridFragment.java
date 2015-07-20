@@ -36,14 +36,38 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private GridView mGridView;
     private GridAdapter mGridAdapter;
-    private Cursor mCursor;
     private ArrayList<MovieDetails> mMovies;
+    private String sortOrderPreference;
 
     public interface Callback {
         public void onItemClick(String[] movieDetails);
     }
 
     public GridFragment() {}
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        String sortOrder = getSortOrder(); // the current preferred sort order
+        if(sortOrderPreference != null) {
+            if (!sortOrderPreference.equals(sortOrder)) { // if the sort order has changed
+                sortOrderPreference = sortOrder;
+
+                getLoaderManager().restartLoader(GRID_FRAGMENT_LOADER_ID, null, this);
+                getLoaderManager().initLoader(GRID_FRAGMENT_LOADER_ID, null, this);
+
+                MatrixCursor matrixCursor = new MatrixCursor(MoviesContract.MoviesEntry.DETAIL_COLUMNS);
+                for (MovieDetails details : mMovies) {
+                    matrixCursor.addRow(details.mDetails);
+                }
+
+                mGridAdapter.notifyDataSetChanged();
+                mGridAdapter.swapCursor(matrixCursor);
+
+                mGridView.smoothScrollToPosition(0);
+            }
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,10 +77,10 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
         mGridAdapter = new GridAdapter(getActivity(), null, 0);
 
-        GridView gridview = (GridView) rootView.findViewById(R.id.gridview);
-        gridview.setAdapter(mGridAdapter);
+        mGridView = (GridView) rootView.findViewById(R.id.gridview);
+        mGridView.setAdapter(mGridAdapter);
 
-        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 //                Toast.makeText(getActivity(), Integer.toString(position), Toast.LENGTH_SHORT).show();
                 String[] details = new String[MoviesContract.MoviesEntry.DETAIL_COLUMNS.length];
@@ -74,11 +98,11 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(savedInstanceState != null) {
+        if(savedInstanceState != null && savedInstanceState.containsKey(MOVIE_KEY)) {
             mMovies = (ArrayList<MovieDetails>)savedInstanceState.get(MOVIE_KEY);
 
             MatrixCursor matrixCursor = new MatrixCursor(MoviesContract.MoviesEntry.DETAIL_COLUMNS);
-            for(MovieDetails details : mMovies) {
+            for (MovieDetails details : mMovies) {
                 matrixCursor.addRow(details.mDetails);
             }
 
@@ -88,6 +112,8 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         else {
             FetchMoviesTask fmt = new FetchMoviesTask(getActivity());
             fmt.execute("3");
+
+            sortOrderPreference = getSortOrder();
         }
     }
 
@@ -103,38 +129,21 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String sortOrder;
-
-        Context context = getActivity();
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String sortKey = context.getString(R.string.pref_sort_key);
-        String popularity = context.getString(R.string.pref_sort_popularity);
-        String rating = context.getString(R.string.pref_sort_rating);
-
-        if(sp.getString(sortKey, popularity).equals(popularity)) {
-            sortOrder = MoviesContract.MoviesEntry.COLUMN_POPULARITY + " DESC";
-        }
-        else if(sp.getString(sortKey, rating).equals(rating)) {
-            sortOrder = MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE + " DESC";
-        }
-        else {
-            sortOrder = sp.getString(sortKey, popularity);
-        }
         return new CursorLoader(
                 getActivity(),
                 MoviesContract.MoviesEntry.CONTENT_URI,
                 null,
                 null,
                 null,
-                sortOrder);
+                getSortOrder());
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mCursor = data;
         mGridAdapter.notifyDataSetChanged();
         mGridAdapter.swapCursor(data);
         mMovies = new ArrayList<MovieDetails>(data.getCount());
+        data.moveToPosition(-1);
         while(data.moveToNext()) {
             String[] values = new String[data.getColumnCount()];
             for(int i = 0; i < data.getColumnCount(); i++) {
@@ -157,5 +166,24 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mGridAdapter.swapCursor(null);
+    }
+
+    public String getSortOrder() {
+        Context context = getActivity();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String sortKey = context.getString(R.string.pref_sort_key);
+        String popularity = context.getString(R.string.pref_sort_popularity);
+        String rating = context.getString(R.string.pref_sort_rating);
+        String sortOrder;
+        if(sp.getString(sortKey, popularity).equals(popularity)) {
+            sortOrder = MoviesContract.MoviesEntry.COLUMN_POPULARITY + " DESC";
+        }
+        else if(sp.getString(sortKey, rating).equals(rating)) {
+            sortOrder = MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE + " DESC";
+        }
+        else {
+            sortOrder = sp.getString(sortKey, popularity);
+        }
+        return sortOrder;
     }
 }
