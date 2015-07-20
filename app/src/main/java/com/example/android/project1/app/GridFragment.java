@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.example.android.project1.app.data.MoviesContract;
 
@@ -110,11 +113,15 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
             mGridAdapter.swapCursor(matrixCursor);
         }
         else {
-            FetchMoviesTask fmt = new FetchMoviesTask(getActivity());
-            fmt.execute("3");
-
-            sortOrderPreference = getSortOrder();
+            if(isNetworkAvailable()) {
+                FetchMoviesTask fmt = new FetchMoviesTask(getActivity());
+                fmt.execute("3");
+            }
+            else {
+                Toast.makeText(getActivity(), "No network connection", Toast.LENGTH_LONG).show();
+            }
         }
+        sortOrderPreference = getSortOrder();
     }
 
     @Override
@@ -185,5 +192,13 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
             sortOrder = sp.getString(sortKey, popularity);
         }
         return sortOrder;
+    }
+
+    // Based on a stackoverflow snippet
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }
