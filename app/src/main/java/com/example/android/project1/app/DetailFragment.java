@@ -20,18 +20,27 @@ public class DetailFragment extends Fragment {
     public static final String MOVIE_DETAILS = "details";
 
     public static final String[] DETAIL_COLUMNS = {
-            MoviesEntry.COLUMN_POSTER_PATH,
+            "_ID",
+            MoviesEntry.COLUMN_ADULT,
+            MoviesEntry.COLUMN_BACKDROP_PATH,
+            MoviesEntry.COLUMN_ID,
+            MoviesEntry.COLUMN_ORIGINAL_LANGUAGE,
             MoviesEntry.COLUMN_ORIGINAL_TITLE,
             MoviesEntry.COLUMN_OVERVIEW,
+            MoviesEntry.COLUMN_RELEASE_DATE,
+            MoviesEntry.COLUMN_POSTER_PATH,
+            MoviesEntry.COLUMN_POPULARITY,
+            MoviesEntry.COLUMN_TITLE,
+            MoviesEntry.COLUMN_VIDEO,
             MoviesEntry.COLUMN_VOTE_AVERAGE,
-            MoviesEntry.COLUMN_RELEASE_DATE
+            MoviesEntry.COLUMN_VOTE_COUNT
     };
 
-    public static final int COL_POSTER = 0;
-    public static final int COL_TITLE = 1;
-    public static final int COL_OVERVIEW = 2;
-    public static final int COL_VOTE_AVERAGE = 3;
-    public static final int COL_RELEASE_DATE = 4;
+    public static final int COL_POSTER = 8;
+    public static final int COL_TITLE = 5;
+    public static final int COL_OVERVIEW = 6;
+    public static final int COL_VOTE_AVERAGE = 12;
+    public static final int COL_RELEASE_DATE = 7;
 
     private ImageView poster;
     private TextView title, overview, voteAverage, releaseDate;
@@ -52,13 +61,13 @@ public class DetailFragment extends Fragment {
             releaseDate = (TextView)rootView.findViewById(R.id.release_date);
 
             Picasso.with(getActivity())
-                    .load("http://image.tmdb.org/t/p/w342/" + details[0])
+                    .load("http://image.tmdb.org/t/p/w342/" + details[COL_POSTER])
                     .into(poster);
 
-            title.setText(details[1]);
-            overview.setText(details[2]);
-            voteAverage.setText(details[3]);
-            releaseDate.setText(details[4]);
+            title.setText(details[COL_TITLE]);
+            overview.setText(details[COL_OVERVIEW]);
+            voteAverage.setText(details[COL_VOTE_AVERAGE]);
+            releaseDate.setText(details[COL_RELEASE_DATE]);
         }
 
         return rootView;

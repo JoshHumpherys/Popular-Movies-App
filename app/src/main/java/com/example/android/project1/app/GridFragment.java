@@ -3,6 +3,7 @@ package com.example.android.project1.app;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -18,6 +19,8 @@ import android.widget.GridView;
 
 import com.example.android.project1.app.data.MoviesContract;
 
+import java.util.ArrayList;
+
 import app.project1.android.example.com.popularmoviesapp.R;
 
 /**
@@ -26,10 +29,16 @@ import app.project1.android.example.com.popularmoviesapp.R;
 public class GridFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final int GRID_FRAGMENT_LOADER_ID = 0;
+    
+    private static final String LOG_TAG = GridFragment.class.getName();
+
+    private static final String MOVIE_KEY = "movies";
+    private static final String INT_TEST_KEY = "testKey";
 
     private GridView mGridView;
     private GridAdapter mGridAdapter;
     private Cursor mCursor;
+    private ArrayList<MovieDetails> mMovies;
 
     public interface Callback {
         public void onItemClick(String[] movieDetails);
@@ -38,19 +47,10 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     public GridFragment() {}
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if(savedInstanceState != null) {
-            Log.e(GridFragment.class.getName(), "ASDFASDFASDFASDFASDF IN ONCREATE OF GRIDFRAGMENT SAVEDINSTANCESTATE != NULL --> TRUE");
-        }
-        else {
-            Log.e(GridFragment.class.getName(), "ASDFASDFASDFASDFASDF IN ONCREATE OF GRIDFRAGMENT SAVEDINSTANCESTATE != NULL --> FALSE");
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+        mMovies = null;
 
         mGridAdapter = new GridAdapter(getActivity(), null, 0);
 
@@ -59,15 +59,42 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                String[] details = new String[DetailFragment.DETAIL_COLUMNS.length];
-                for(int i = 0; i < details.length; i++) {
-                    details[i] = mCursor.getString(mCursor.getColumnIndex(DetailFragment.DETAIL_COLUMNS[i]));
+//                Toast.makeText(getActivity(), Integer.toString(position), Toast.LENGTH_SHORT).show();
+                String[] details = new String[MoviesContract.MoviesEntry.DETAIL_COLUMNS.length];
+                for (int i = 0; i < details.length; i++) {
+//                    details[i] = mCursor.getString(mCursor.getColumnIndex(DetailFragment.DETAIL_COLUMNS[i]));
+                    details[i] = mMovies.get(position).mDetails[i];
                 }
-                ((Callback)getActivity()).onItemClick(details);
+                ((Callback) getActivity()).onItemClick(details);
             }
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(savedInstanceState != null) {
+            mMovies = (ArrayList<MovieDetails>)savedInstanceState.get(MOVIE_KEY);
+
+            MatrixCursor matrixCursor = new MatrixCursor(MoviesContract.MoviesEntry.DETAIL_COLUMNS);
+            for(MovieDetails details : mMovies) {
+                matrixCursor.addRow(details.mDetails);
+            }
+
+            mGridAdapter.notifyDataSetChanged();
+            mGridAdapter.swapCursor(matrixCursor);
+        }
+        else {
+            Log.v(GridFragment.class.getName(), "onActivityCreated savedInstanceState == null");
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(MOVIE_KEY, mMovies);
     }
 
     public void onItemInserted() {
@@ -105,11 +132,26 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mCursor = data;
-//        mGridAdapter.swapCursor(data);
         mGridAdapter.notifyDataSetChanged();
-//        mGridAdapter.notifyDataSetInvalidated();
-//        mGridView.setAdapter(mGridAdapter); // throws NullPointerException
         mGridAdapter.swapCursor(data);
+        mMovies = new ArrayList<MovieDetails>(data.getCount());
+        while(data.moveToNext()) {
+            String[] values = new String[data.getColumnCount()];
+            for(int i = 0; i < data.getColumnCount(); i++) {
+                int type = data.getType(i);
+                switch(type) {
+                    case Cursor.FIELD_TYPE_STRING:
+                        values[i] = data.getString(i);
+                        break;
+                    case Cursor.FIELD_TYPE_FLOAT:
+                        values[i] = Float.toString(data.getFloat(i));
+                        break;
+                    case Cursor.FIELD_TYPE_INTEGER:
+                        values[i] = Integer.toString(data.getInt(i));
+                }
+            }
+            mMovies.add(new MovieDetails(values));
+        }
     }
 
     @Override

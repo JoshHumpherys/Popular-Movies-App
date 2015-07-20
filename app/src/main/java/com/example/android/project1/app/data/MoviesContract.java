@@ -40,6 +40,23 @@ public class MoviesContract {
         public static final String COLUMN_VOTE_AVERAGE = "vote_average";
         public static final String COLUMN_VOTE_COUNT = "vote_count";
 
+        public static final String[] DETAIL_COLUMNS = {
+                "_ID",
+                COLUMN_ADULT,
+                COLUMN_BACKDROP_PATH,
+                COLUMN_ID,
+                COLUMN_ORIGINAL_LANGUAGE,
+                COLUMN_ORIGINAL_TITLE,
+                COLUMN_OVERVIEW,
+                COLUMN_RELEASE_DATE,
+                COLUMN_POSTER_PATH,
+                COLUMN_POPULARITY,
+                COLUMN_TITLE,
+                COLUMN_VIDEO,
+                COLUMN_VOTE_AVERAGE,
+                COLUMN_VOTE_COUNT
+        };
+
         public static Uri buildMovieUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
