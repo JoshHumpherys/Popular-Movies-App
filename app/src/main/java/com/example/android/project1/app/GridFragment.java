@@ -104,6 +104,10 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         if(savedInstanceState != null && savedInstanceState.containsKey(MOVIE_KEY)) {
             mMovies = (ArrayList<MovieDetails>)savedInstanceState.get(MOVIE_KEY);
 
+            if(mMovies == null) {
+                return;
+            }
+
             MatrixCursor matrixCursor = new MatrixCursor(MoviesContract.MoviesEntry.DETAIL_COLUMNS);
             for (MovieDetails details : mMovies) {
                 matrixCursor.addRow(details.mDetails);
@@ -120,8 +124,8 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
             else {
                 Toast.makeText(getActivity(), "No network connection", Toast.LENGTH_LONG).show();
             }
+            sortOrderPreference = getSortOrder();
         }
-        sortOrderPreference = getSortOrder();
     }
 
     @Override
