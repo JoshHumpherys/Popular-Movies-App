@@ -36,6 +36,7 @@ public class DetailFragment extends Fragment {
             MoviesEntry.COLUMN_VOTE_COUNT
     };
 
+    public static final int COL_ID = 3;
     public static final int COL_POSTER = 8;
     public static final int COL_TITLE = 5;
     public static final int COL_OVERVIEW = 6;
@@ -68,6 +69,9 @@ public class DetailFragment extends Fragment {
             overview.setText(details[COL_OVERVIEW]);
             voteAverage.setText(details[COL_VOTE_AVERAGE] + "/10");
             releaseDate.setText(details[COL_RELEASE_DATE].substring(0, 4));
+
+            FetchDetailsTask fdt = new FetchDetailsTask(getActivity());
+            fdt.execute(details[COL_ID]);
         }
 
         return rootView;
