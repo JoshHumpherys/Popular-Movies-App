@@ -66,8 +66,8 @@ public class DetailFragment extends Fragment {
 
             title.setText(details[COL_TITLE]);
             overview.setText(details[COL_OVERVIEW]);
-            voteAverage.setText(details[COL_VOTE_AVERAGE]);
-            releaseDate.setText(details[COL_RELEASE_DATE]);
+            voteAverage.setText(details[COL_VOTE_AVERAGE] + "/10");
+            releaseDate.setText(details[COL_RELEASE_DATE].substring(0, 4));
         }
 
         return rootView;

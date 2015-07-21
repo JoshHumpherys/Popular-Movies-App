@@ -12,4 +12,9 @@
     <string name="pref_sort_rating_label" translatable="false">Highest-rated</string>
     <string name="pref_sort_popularity">Most popular</string>
     <string name="pref_sort_rating">Highest-rated</string>
+
+    <string name="favorites_button_text">Save to favorites</string>
+    <string name="favorites_button_tag">favorites</string>
+    <string name="trailers_text">Trailers:</string>
+    <string name="reviews_text">Reviews:</string>
 </resources>

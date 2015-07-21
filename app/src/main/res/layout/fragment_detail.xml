@@ -9,37 +9,169 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="32dp"
+            android:textSize="36sp"
+            android:textColor="@color/white"
+            android:background="@color/primary_dark" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="32dp">
 
             <ImageView
-                android:id="@+id/poster"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                    android:id="@+id/poster"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="32dp" />
 
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
+                <TextView
+                    android:id="@+id/release_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/secondary_text"
+                    android:textAppearance="?android:textAppearanceLarge"
+                    android:fontFamily="sans-serif-light" />
+
+                <TextView
+                    android:id="@+id/vote_average"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/primary_text"
+                    android:textAppearance="?android:textAppearanceSmall"
+                    android:fontFamily="sans-serif-condensed"
+                    android:layout_marginTop="8dp" />
+
+                <Button
+                    android:id="@+id/favorites_button"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/favorites_button_text"
+                    android:tag="@string/favorites_button_tag"
+                    android:textAppearance="?android:textAppearanceButton"
+                    android:textColor="@color/white"
+                    android:gravity="center"
+                    android:background="@drawable/favorites_button"
+                    android:layout_marginTop="8dp" />
+
+            </LinearLayout>
         </LinearLayout>
 
         <TextView
             android:id="@+id/overview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/secondary_text"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
 
         <TextView
-            android:id="@+id/vote_average"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="@string/trailers_text"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:fontFamily="sans_serif_light"
+            android:textColor="@color/secondary_text"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="TODO play" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Trailer 1" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="TODO play" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Trailer 2" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/secondary_text"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
 
         <TextView
-            android:id="@+id/release_date"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="@string/reviews_text"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:fontFamily="sans_serif_light"
+            android:textColor="@color/secondary_text"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="Review test TODO dynamically fill this view with real reviews. Make request to /movie/{id}/reviews endpoint to fetch reviews. Make container view and fill it dynamially with review views, rather than hardcoding in reviews at compile time." />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="Review test TODO dynamically fill this view with real reviews. Make request to /movie/{id}/reviews endpoint to fetch reviews. Make container view and fill it dynamially with review views, rather than hardcoding in reviews at compile time." />
+
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

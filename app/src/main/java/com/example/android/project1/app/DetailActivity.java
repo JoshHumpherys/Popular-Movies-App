@@ -27,7 +27,7 @@ public class DetailActivity extends ActionBarActivity {
         df.setArguments(args);
 
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.detail_container, df)
+                .replace(R.id.detail_container, df)
                 .commit();
     }
 }
