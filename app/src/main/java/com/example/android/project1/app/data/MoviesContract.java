@@ -13,6 +13,8 @@ public class MoviesContract {
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     public static final String PATH_MOVIE = "movie";
+    public static final String PATH_TRAILER = "trailer";
+    public static final String PATH_REVIEW = "review";
 
     public static final class MoviesEntry implements BaseColumns {
         public static final Uri CONTENT_URI =
@@ -62,4 +64,67 @@ public class MoviesContract {
         }
     }
 
+    public static final class TrailersEntry implements BaseColumns {
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_TRAILER).build();
+
+        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" +
+                CONTENT_AUTHORITY + "/" + PATH_TRAILER;
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" +
+                CONTENT_AUTHORITY + "/" + PATH_TRAILER;
+
+        public static final String TABLE_NAME = "trailers";
+
+        public static final String COLUMN_TRAILER_ID = "id";
+        public static final String COLUMN_LANG = "iso_639_1";
+        public static final String COLUMN_KEY = "key"; // to be used with trailer intent
+        public static final String COLUMN_NAME = "name";
+        public static final String COLUMN_SITE = "site";
+        public static final String COLUMN_SIZE = "size"; // int
+        public static final String COLUMN_TYPE = "type";
+
+        public static final String[] DETAIL_COLUMNS = {
+                "_ID",
+                COLUMN_TRAILER_ID,
+                COLUMN_LANG,
+                COLUMN_KEY,
+                COLUMN_NAME,
+                COLUMN_SITE,
+                COLUMN_SIZE,
+                COLUMN_TYPE
+        };
+
+        public static Uri buildMovieUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+    }
+
+    public static final class ReviewsEntry implements BaseColumns {
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_REVIEW).build();
+
+        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" +
+                CONTENT_AUTHORITY + "/" + PATH_REVIEW;
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" +
+                CONTENT_AUTHORITY + "/" + PATH_REVIEW;
+
+        public static final String TABLE_NAME = "reviews";
+
+        public static final String COLUMN_REVIEW_ID = "id";
+        public static final String COLUMN_AUTHOR = "author";
+        public static final String COLUMN_CONTENT = "content";
+        public static final String COLUMN_URL = "url";
+
+        public static final String[] DETAIL_COLUMNS = {
+                "_ID",
+                COLUMN_REVIEW_ID,
+                COLUMN_AUTHOR,
+                COLUMN_CONTENT,
+                COLUMN_URL
+        };
+
+        public static Uri buildMovieUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+    }
 }

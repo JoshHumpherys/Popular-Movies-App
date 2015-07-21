@@ -1,13 +1,21 @@
 package com.example.android.project1.app;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.android.project1.app.data.MoviesContract;
 import com.example.android.project1.app.data.MoviesContract.MoviesEntry;
 import com.squareup.picasso.Picasso;
 
@@ -16,7 +24,10 @@ import app.project1.android.example.com.popularmoviesapp.R;
 /**
  * Created by Admin-HHE on 7/13/2015.
  */
-public class DetailFragment extends Fragment {
+public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    public static final int DETAIL_FRAGMENT_LOADER_ID_TRAILERS = 1;
+    public static final int DETAIL_FRAGMENT_LOADER_ID_REVIEWS = 2;
+
     public static final String MOVIE_DETAILS = "details";
 
     public static final String[] DETAIL_COLUMNS = {
@@ -75,5 +86,60 @@ public class DetailFragment extends Fragment {
         }
 
         return rootView;
+    }
+
+    public void onItemInserted() {
+        getLoaderManager().initLoader(DETAIL_FRAGMENT_LOADER_ID_TRAILERS, null, this);
+        getLoaderManager().initLoader(DETAIL_FRAGMENT_LOADER_ID_REVIEWS, null, this);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        if(id == DETAIL_FRAGMENT_LOADER_ID_TRAILERS) {
+            return new CursorLoader(
+                    getActivity(),
+                    MoviesContract.TrailersEntry.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    null);
+        }
+        else if(id == DETAIL_FRAGMENT_LOADER_ID_REVIEWS){
+            return new CursorLoader(
+                    getActivity(),
+                    MoviesContract.ReviewsEntry.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    null);
+        }
+        else {
+            throw new UnsupportedOperationException("Invalid loader id");
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        int id = loader.getId();
+        if(id == DETAIL_FRAGMENT_LOADER_ID_TRAILERS) {
+            // do stuff with cursor for trailers
+        }
+        else if(id == DETAIL_FRAGMENT_LOADER_ID_REVIEWS) {
+            // do stuff with cursor for reviews
+        }
+        else {
+            throw new UnsupportedOperationException("Invalid loader id");
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {}
+
+    // Based on a stackoverflow snippet
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

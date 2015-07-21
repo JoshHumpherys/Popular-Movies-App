@@ -1,9 +1,18 @@
 package com.example.android.project1.app;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.example.android.project1.app.data.MoviesContract;
+import com.example.android.project1.app.data.MoviesContract.TrailersEntry;
+import com.example.android.project1.app.data.MoviesContract.ReviewsEntry;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,6 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Vector;
 
 /**
  * Created by Admin-HHE on 7/21/2015.
@@ -29,6 +39,97 @@ public class FetchDetailsTask extends AsyncTask<String, Void, Void> {
 
     public FetchDetailsTask(Context context) {
         mContext = context;
+    }
+
+    public void insertJsonIntoDatabase(String rawJsonStrTrailers, String rawJsonStrReviews)
+            throws JSONException {
+
+        // Outermost JSON objects
+        final String MOVIE_ID = "id";
+        final String RESULTS = "results";
+        final String REVIEWS_PAGE = "page"; // only for reviews json
+
+        // JSON objects contained in RESULTS object of trailers request
+        final String TRAILER_ID = "id";
+        final String LANG = "iso_639_1";
+        final String KEY = "key"; // to be used with trailer intent
+        final String NAME = "name";
+        final String SITE = "site";
+        final String SIZE = "size"; // int
+        final String TYPE = "type";
+
+        // JSON objects contained in RESULTS object of reviews request
+        final String REVIEW_ID = "id";
+        final String AUTHOR = "author";
+        final String CONTENT = "content";
+        final String URL = "url";
+
+        try {
+            JSONObject jsonObjectTrailers = new JSONObject(rawJsonStrTrailers);
+            JSONArray jsonArrayTrailers = jsonObjectTrailers.getJSONArray(RESULTS);
+            JSONObject jsonObjectReviews = new JSONObject(rawJsonStrReviews);
+            JSONArray jsonArrayReviews = jsonObjectReviews.getJSONArray(RESULTS);
+
+            Vector<ContentValues> vectorTrailers = new Vector<ContentValues>(jsonArrayTrailers.length());
+            Vector<ContentValues> vectorReviews = new Vector<ContentValues>(jsonArrayReviews.length());
+
+            for(int i = 0; i < jsonArrayTrailers.length(); i++) {
+                JSONObject movieObject = jsonArrayTrailers.getJSONObject(i);
+
+                String id = movieObject.getString(TRAILER_ID);
+                String lang = movieObject.getString(LANG);
+                String key = movieObject.getString(KEY);
+                String name = movieObject.getString(NAME);
+                String site = movieObject.getString(SITE);
+                String size = movieObject.getString(SIZE);
+                String type = movieObject.getString(TYPE);
+
+                ContentValues values = new ContentValues();
+
+                values.put(TrailersEntry.COLUMN_TRAILER_ID, id);
+                values.put(TrailersEntry.COLUMN_LANG, lang);
+                values.put(TrailersEntry.COLUMN_KEY, key);
+                values.put(TrailersEntry.COLUMN_NAME, name);
+                values.put(TrailersEntry.COLUMN_SITE, site);
+                values.put(TrailersEntry.COLUMN_SIZE, size);
+                values.put(TrailersEntry.COLUMN_TYPE, type);
+
+                vectorTrailers.add(values);
+            }
+
+            for(int i = 0; i < jsonArrayReviews.length(); i++) {
+                JSONObject movieObject = jsonArrayReviews.getJSONObject(i);
+
+                String id = movieObject.getString(REVIEW_ID);
+                String author = movieObject.getString(AUTHOR);
+                String content = movieObject.getString(CONTENT);
+                String url = movieObject.getString(URL);
+
+                ContentValues values = new ContentValues();
+
+                values.put(ReviewsEntry.COLUMN_REVIEW_ID, id);
+                values.put(ReviewsEntry.COLUMN_AUTHOR, author);
+                values.put(ReviewsEntry.COLUMN_CONTENT, content);
+                values.put(ReviewsEntry.COLUMN_URL, url);
+
+                vectorReviews.add(values);
+            }
+
+            if(vectorTrailers.size() > 0) {
+                ContentValues[] array = new ContentValues[vectorTrailers.size()];
+                vectorTrailers.toArray(array);
+                mContext.getContentResolver().bulkInsert(MoviesContract.TrailersEntry.CONTENT_URI, array);
+            }
+            if(vectorReviews.size() > 0) {
+                ContentValues[] array = new ContentValues[vectorReviews.size()];
+                vectorReviews.toArray(array);
+                mContext.getContentResolver().bulkInsert(MoviesContract.ReviewsEntry.CONTENT_URI, array);
+            }
+        }
+        catch (JSONException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -55,7 +156,7 @@ public class FetchDetailsTask extends AsyncTask<String, Void, Void> {
                     .appendQueryParameter(API_KEY_PARAM, API_KEY)
                     .build();
 
-            Uri builtUriReviews = Uri.parse(TRAILERS_BASE_URL).buildUpon()
+            Uri builtUriReviews = Uri.parse(REVIEWS_BASE_URL).buildUpon()
                     .appendQueryParameter(API_KEY_PARAM, API_KEY)
                     .build();
 
@@ -89,12 +190,12 @@ public class FetchDetailsTask extends AsyncTask<String, Void, Void> {
 
             Log.v(LOG_TAG, "Raw JSON string pulled with URL " + urlTrailers + ": " + rawJsonStrTrailers);
             Log.v(LOG_TAG, "Raw JSON string pulled with URL " + urlReviews + ": " + rawJsonStrReviews);
-//                insertJsonIntoDatabase(rawJsonStr, pageQuery);
+            insertJsonIntoDatabase(rawJsonStrTrailers, rawJsonStrReviews);
         } catch(IOException e) {
             Log.e(LOG_TAG, "Error ", e);
-//        } catch(JSONException e) {
-//            Log.e(LOG_TAG, e.getMessage(), e);
-//            e.printStackTrace();
+        } catch(JSONException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
         } catch(NumberFormatException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();

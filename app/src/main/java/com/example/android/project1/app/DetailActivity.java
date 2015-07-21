@@ -2,14 +2,21 @@ package com.example.android.project1.app;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 
 import app.project1.android.example.com.popularmoviesapp.R;
 
 /**
  * Created by Admin-HHE on 7/13/2015.
  */
-public class DetailActivity extends ActionBarActivity {
+public class DetailActivity extends AppCompatActivity implements FetchDetailsTask.Callback {
+
+    private static final String DETAIL_FRAGMENT_TAG = "DFTAG";
+
+    @Override
+    public void onInsertComplete() {
+        ((DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAIL_FRAGMENT_TAG)).onItemInserted();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -27,7 +34,7 @@ public class DetailActivity extends ActionBarActivity {
         df.setArguments(args);
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.detail_container, df)
+                .replace(R.id.detail_container, df, DETAIL_FRAGMENT_TAG)
                 .commit();
     }
 }
