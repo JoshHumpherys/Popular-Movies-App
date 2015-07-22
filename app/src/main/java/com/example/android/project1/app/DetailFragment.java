@@ -1,9 +1,11 @@
 package com.example.android.project1.app;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -12,6 +14,7 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -78,6 +81,16 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         mListAdapterTrailers = new DetailAdapterTrailers(getActivity(), null, 0);
         trailers.setAdapter(mListAdapterTrailers);
+        trailers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Cursor cursor = mListAdapterTrailers.getCursor();
+                cursor.moveToPosition(position);
+                String youtubeId = cursor.getString(cursor.getColumnIndex(MoviesContract.TrailersEntry.COLUMN_KEY));
+                Uri uri = Uri.parse("http://www.youtube.com/watch?v=" + youtubeId);
+                startActivity(new Intent(Intent.ACTION_VIEW, uri));
+            }
+        });
 
         mListAdapterReviews = new DetailAdapterReviews(getActivity(), null, 0);
         reviews.setAdapter(mListAdapterReviews);
