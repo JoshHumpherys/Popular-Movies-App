@@ -44,6 +44,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public static final String MOVIE_DETAILS = "details";
     public static final String FAVORITES_KEY = "favorites";
 
+    private boolean addToFavoritesScheduled = false;
+
     public static final String[] DETAIL_COLUMNS = {
             "_ID",
             MoviesEntry.COLUMN_ADULT,
@@ -134,11 +136,18 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     public void onItemInserted(String movieId) {
         this.movieId = movieId;
+        if(addToFavoritesScheduled == true) {
+            addToFavorites(favorites);
+        }
         getLoaderManager().initLoader(DETAIL_FRAGMENT_LOADER_ID_TRAILERS, null, this);
         getLoaderManager().initLoader(DETAIL_FRAGMENT_LOADER_ID_REVIEWS, null, this);
     }
 
     public void addToFavorites(View view) {
+        if(movieId == null) {
+            addToFavoritesScheduled = true;
+            return;
+        }
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         Set<String> favorites = sp.getStringSet(FAVORITES_KEY, null);
         if(favorites == null) {
