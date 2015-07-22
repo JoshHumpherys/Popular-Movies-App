@@ -95,44 +95,11 @@
             android:layout_marginLeft="32dp"
             android:layout_marginRight="32dp" />
 
-        <LinearLayout
+        <ListView
+            android:id="@+id/trailers_listview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text="TODO play" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="Trailer 1" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text="TODO play" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="Trailer 2" />
-
-        </LinearLayout>
+            android:layout_margin="16dp" />
 
         <View
             android:layout_width="match_parent"
@@ -153,25 +120,37 @@
             android:layout_marginLeft="32dp"
             android:layout_marginRight="32dp" />
 
-        <LinearLayout
-            android:orientation="vertical"
+        <ListView
+            android:id="@+id/reviews_listview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text="Review test TODO dynamically fill this view with real reviews. Make request to /movie/{id}/reviews endpoint to fetch reviews. Make container view and fill it dynamially with review views, rather than hardcoding in reviews at compile time." />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text="Review test TODO dynamically fill this view with real reviews. Make request to /movie/{id}/reviews endpoint to fetch reviews. Make container view and fill it dynamially with review views, rather than hardcoding in reviews at compile time." />
-
-        </LinearLayout>
+            android:layout_margin="16dp" />
 
     </LinearLayout>
 </ScrollView>
+
+<!--<TextView-->
+<!--android:layout_width="wrap_content"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:padding="16dp"-->
+<!--android:text="TODO play" />-->
+
+<!--<TextView-->
+<!--android:layout_width="0dp"-->
+<!--android:layout_weight="1"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:text="Trailer 2" />-->
+
+
+
+<!--<TextView-->
+<!--android:layout_width="wrap_content"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:padding="16dp"-->
+<!--android:text="Review test TODO dynamically fill this view with real reviews. Make request to /movie/{id}/reviews endpoint to fetch reviews. Make container view and fill it dynamially with review views, rather than hardcoding in reviews at compile time." />-->
+
+<!--<TextView-->
+<!--android:layout_width="wrap_content"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:padding="16dp"-->
+<!--android:text="Review test TODO dynamically fill this view with real reviews. Make request to /movie/{id}/reviews endpoint to fetch reviews. Make container view and fill it dynamially with review views, rather than hardcoding in reviews at compile time." />-->

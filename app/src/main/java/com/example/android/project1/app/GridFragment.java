@@ -35,7 +35,6 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     private static final String LOG_TAG = GridFragment.class.getName();
 
     private static final String MOVIE_KEY = "movies";
-    private static final String INT_TEST_KEY = "testKey";
 
     private GridView mGridView;
     private GridAdapter mGridAdapter;

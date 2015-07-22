@@ -75,6 +75,7 @@ public class MoviesContract {
 
         public static final String TABLE_NAME = "trailers";
 
+        public static final String COLUMN_MOVIE_ID = "movieId";
         public static final String COLUMN_TRAILER_ID = "id";
         public static final String COLUMN_LANG = "iso_639_1";
         public static final String COLUMN_KEY = "key"; // to be used with trailer intent
@@ -85,6 +86,7 @@ public class MoviesContract {
 
         public static final String[] DETAIL_COLUMNS = {
                 "_ID",
+                COLUMN_MOVIE_ID,
                 COLUMN_TRAILER_ID,
                 COLUMN_LANG,
                 COLUMN_KEY,
@@ -110,6 +112,7 @@ public class MoviesContract {
 
         public static final String TABLE_NAME = "reviews";
 
+        public static final String COLUMN_MOVIE_ID = "movieId";
         public static final String COLUMN_REVIEW_ID = "id";
         public static final String COLUMN_AUTHOR = "author";
         public static final String COLUMN_CONTENT = "content";
@@ -117,6 +120,7 @@ public class MoviesContract {
 
         public static final String[] DETAIL_COLUMNS = {
                 "_ID",
+                COLUMN_MOVIE_ID,
                 COLUMN_REVIEW_ID,
                 COLUMN_AUTHOR,
                 COLUMN_CONTENT,

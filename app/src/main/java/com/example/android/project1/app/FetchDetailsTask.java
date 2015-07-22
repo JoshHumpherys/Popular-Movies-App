@@ -32,17 +32,20 @@ public class FetchDetailsTask extends AsyncTask<String, Void, Void> {
     private static final String API_KEY = "4be6ba35033283805916b8896c01b040";
 
     private final Context mContext;
+    private String movieId;
 
     public interface Callback {
-        public void onInsertComplete();
+        public void onInsertComplete(String movieId);
     }
 
     public FetchDetailsTask(Context context) {
         mContext = context;
     }
 
-    public void insertJsonIntoDatabase(String rawJsonStrTrailers, String rawJsonStrReviews)
+    public void insertJsonIntoDatabase(String rawJsonStrTrailers, String rawJsonStrReviews, String movieId)
             throws JSONException {
+
+        this.movieId = movieId;
 
         // Outermost JSON objects
         final String MOVIE_ID = "id";
@@ -86,6 +89,7 @@ public class FetchDetailsTask extends AsyncTask<String, Void, Void> {
 
                 ContentValues values = new ContentValues();
 
+                values.put(TrailersEntry.COLUMN_MOVIE_ID, movieId);
                 values.put(TrailersEntry.COLUMN_TRAILER_ID, id);
                 values.put(TrailersEntry.COLUMN_LANG, lang);
                 values.put(TrailersEntry.COLUMN_KEY, key);
@@ -107,6 +111,7 @@ public class FetchDetailsTask extends AsyncTask<String, Void, Void> {
 
                 ContentValues values = new ContentValues();
 
+                values.put(ReviewsEntry.COLUMN_MOVIE_ID, movieId);
                 values.put(ReviewsEntry.COLUMN_REVIEW_ID, id);
                 values.put(ReviewsEntry.COLUMN_AUTHOR, author);
                 values.put(ReviewsEntry.COLUMN_CONTENT, content);
@@ -190,7 +195,7 @@ public class FetchDetailsTask extends AsyncTask<String, Void, Void> {
 
             Log.v(LOG_TAG, "Raw JSON string pulled with URL " + urlTrailers + ": " + rawJsonStrTrailers);
             Log.v(LOG_TAG, "Raw JSON string pulled with URL " + urlReviews + ": " + rawJsonStrReviews);
-            insertJsonIntoDatabase(rawJsonStrTrailers, rawJsonStrReviews);
+            insertJsonIntoDatabase(rawJsonStrTrailers, rawJsonStrReviews, id);
         } catch(IOException e) {
             Log.e(LOG_TAG, "Error ", e);
         } catch(JSONException e) {
@@ -227,6 +232,6 @@ public class FetchDetailsTask extends AsyncTask<String, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        ((Callback)mContext).onInsertComplete();
+        ((Callback)mContext).onInsertComplete(movieId);
     }
 }

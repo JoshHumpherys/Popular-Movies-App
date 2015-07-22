@@ -14,8 +14,8 @@ public class DetailActivity extends AppCompatActivity implements FetchDetailsTas
     private static final String DETAIL_FRAGMENT_TAG = "DFTAG";
 
     @Override
-    public void onInsertComplete() {
-        ((DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAIL_FRAGMENT_TAG)).onItemInserted();
+    public void onInsertComplete(String movieId) {
+        ((DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAIL_FRAGMENT_TAG)).onItemInserted(movieId);
     }
 
     @Override

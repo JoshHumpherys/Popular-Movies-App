@@ -12,7 +12,7 @@ import com.example.android.project1.app.data.MoviesContract.ReviewsEntry;
  * Created by Admin-HHE on 7/9/2015.
  */
 public class MoviesDbHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
 
     static final String DATABASE_NAME = "movie.db";
 
@@ -45,6 +45,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 "CREATE TABLE " +
                 TrailersEntry.TABLE_NAME + " (" +
                 TrailersEntry._ID + " INTEGER PRIMARY KEY," +
+                TrailersEntry.COLUMN_MOVIE_ID + " TEXT NOT NULL, " +
                 TrailersEntry.COLUMN_TRAILER_ID + " TEXT NOT NULL, " +
                 TrailersEntry.COLUMN_LANG + " TEXT NOT NULL, " +
                 TrailersEntry.COLUMN_KEY + " TEXT NOT NULL, " +
@@ -52,17 +53,18 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 TrailersEntry.COLUMN_SITE + " TEXT NOT NULL, " +
                 TrailersEntry.COLUMN_SIZE + " INT NOT NULL, " +
                 TrailersEntry.COLUMN_TYPE + " TEXT NOT NULL, " +
-                " UNIQUE (" + TrailersEntry.COLUMN_TRAILER_ID + ") ON CONFLICT REPLACE);";
+                " UNIQUE (" + TrailersEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE);";
 
         final String SQL_CREATE_REVIEW_TABLE =
                 "CREATE TABLE " +
                 ReviewsEntry.TABLE_NAME + " (" +
                 ReviewsEntry._ID + " INTEGER PRIMARY KEY," +
+                ReviewsEntry.COLUMN_MOVIE_ID + " TEXT NOT NULL, " +
                 ReviewsEntry.COLUMN_REVIEW_ID + " TEXT NOT NULL, " +
                 ReviewsEntry.COLUMN_AUTHOR + " TEXT NOT NULL, " +
                 ReviewsEntry.COLUMN_CONTENT + " TEXT NOT NULL, " +
                 ReviewsEntry.COLUMN_URL + " TEXT NOT NULL, " +
-                " UNIQUE (" + ReviewsEntry.COLUMN_REVIEW_ID + ") ON CONFLICT REPLACE);";
+                " UNIQUE (" + ReviewsEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE);";
 
         db.execSQL(SQL_CREATE_MOVIE_TABLE);
         db.execSQL(SQL_CREATE_TRAILER_TABLE);

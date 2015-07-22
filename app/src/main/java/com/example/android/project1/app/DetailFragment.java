@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.android.project1.app.data.MoviesContract;
@@ -25,6 +26,8 @@ import app.project1.android.example.com.popularmoviesapp.R;
  * Created by Admin-HHE on 7/13/2015.
  */
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    private static final String LOG_TAG = DetailFragment.class.getName();
+
     public static final int DETAIL_FRAGMENT_LOADER_ID_TRAILERS = 1;
     public static final int DETAIL_FRAGMENT_LOADER_ID_REVIEWS = 2;
 
@@ -57,10 +60,27 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private ImageView poster;
     private TextView title, overview, voteAverage, releaseDate;
 
+    private DetailAdapterTrailers mListAdapterTrailers;
+    private DetailAdapterReviews mListAdapterReviews;
+
+    private ListView trailers;
+    private ListView reviews;
+
+    private String movieId;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        trailers = (ListView)rootView.findViewById(R.id.trailers_listview);
+        reviews = (ListView)rootView.findViewById(R.id.reviews_listview);
+
+        mListAdapterTrailers = new DetailAdapterTrailers(getActivity(), null, 0);
+        trailers.setAdapter(mListAdapterTrailers);
+
+        mListAdapterReviews = new DetailAdapterReviews(getActivity(), null, 0);
+        reviews.setAdapter(mListAdapterReviews);
 
         Bundle args = getArguments();
         if(args != null) {
@@ -88,7 +108,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         return rootView;
     }
 
-    public void onItemInserted() {
+    public void onItemInserted(String movieId) {
+        this.movieId = movieId;
         getLoaderManager().initLoader(DETAIL_FRAGMENT_LOADER_ID_TRAILERS, null, this);
         getLoaderManager().initLoader(DETAIL_FRAGMENT_LOADER_ID_REVIEWS, null, this);
     }
@@ -100,8 +121,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                     getActivity(),
                     MoviesContract.TrailersEntry.CONTENT_URI,
                     null,
-                    null,
-                    null,
+                    MoviesContract.TrailersEntry.COLUMN_MOVIE_ID + " = ?",
+                    new String[]{movieId},
                     null);
         }
         else if(id == DETAIL_FRAGMENT_LOADER_ID_REVIEWS){
@@ -109,8 +130,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                     getActivity(),
                     MoviesContract.ReviewsEntry.CONTENT_URI,
                     null,
-                    null,
-                    null,
+                    MoviesContract.ReviewsEntry.COLUMN_MOVIE_ID + " = ?",
+                    new String[]{movieId},
                     null);
         }
         else {
@@ -122,10 +143,13 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         int id = loader.getId();
         if(id == DETAIL_FRAGMENT_LOADER_ID_TRAILERS) {
-            // do stuff with cursor for trailers
+            mListAdapterTrailers.notifyDataSetChanged();
+            mListAdapterTrailers.swapCursor(data);
+
         }
         else if(id == DETAIL_FRAGMENT_LOADER_ID_REVIEWS) {
-            // do stuff with cursor for reviews
+            mListAdapterReviews.notifyDataSetChanged();
+            mListAdapterReviews.swapCursor(data);
         }
         else {
             throw new UnsupportedOperationException("Invalid loader id");

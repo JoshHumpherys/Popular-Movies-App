@@ -57,7 +57,7 @@ public class MoviesProvider extends ContentProvider {
                 break;
             case REVIEWS:
                 cursor = db.query(
-                        MoviesContract.MoviesEntry.TABLE_NAME,
+                        MoviesContract.ReviewsEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
