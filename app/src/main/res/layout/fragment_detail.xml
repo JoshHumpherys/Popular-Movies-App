@@ -63,7 +63,8 @@
                     android:textColor="@color/white"
                     android:gravity="center"
                     android:background="@drawable/favorites_button"
-                    android:layout_marginTop="8dp" />
+                    android:layout_marginTop="8dp"
+                    android:onClick="addToFavorites" />
 
             </LinearLayout>
         </LinearLayout>
@@ -128,29 +129,3 @@
 
     </LinearLayout>
 </ScrollView>
-
-<!--<TextView-->
-<!--android:layout_width="wrap_content"-->
-<!--android:layout_height="wrap_content"-->
-<!--android:padding="16dp"-->
-<!--android:text="TODO play" />-->
-
-<!--<TextView-->
-<!--android:layout_width="0dp"-->
-<!--android:layout_weight="1"-->
-<!--android:layout_height="wrap_content"-->
-<!--android:text="Trailer 2" />-->
-
-
-
-<!--<TextView-->
-<!--android:layout_width="wrap_content"-->
-<!--android:layout_height="wrap_content"-->
-<!--android:padding="16dp"-->
-<!--android:text="Review test TODO dynamically fill this view with real reviews. Make request to /movie/{id}/reviews endpoint to fetch reviews. Make container view and fill it dynamially with review views, rather than hardcoding in reviews at compile time." />-->
-
-<!--<TextView-->
-<!--android:layout_width="wrap_content"-->
-<!--android:layout_height="wrap_content"-->
-<!--android:padding="16dp"-->
-<!--android:text="Review test TODO dynamically fill this view with real reviews. Make request to /movie/{id}/reviews endpoint to fetch reviews. Make container view and fill it dynamially with review views, rather than hardcoding in reviews at compile time." />-->

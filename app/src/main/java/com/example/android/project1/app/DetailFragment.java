@@ -2,11 +2,14 @@ package com.example.android.project1.app;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -15,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,6 +26,9 @@ import android.widget.TextView;
 import com.example.android.project1.app.data.MoviesContract;
 import com.example.android.project1.app.data.MoviesContract.MoviesEntry;
 import com.squareup.picasso.Picasso;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import app.project1.android.example.com.popularmoviesapp.R;
 
@@ -35,6 +42,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public static final int DETAIL_FRAGMENT_LOADER_ID_REVIEWS = 2;
 
     public static final String MOVIE_DETAILS = "details";
+    public static final String FAVORITES_KEY = "favorites";
 
     public static final String[] DETAIL_COLUMNS = {
             "_ID",
@@ -68,6 +76,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     private ListView trailers;
     private ListView reviews;
+    private Button favorites;
 
     private String movieId;
 
@@ -75,6 +84,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        favorites = (Button)rootView.findViewById(R.id.favorites_button);
 
         trailers = (ListView)rootView.findViewById(R.id.trailers_listview);
         reviews = (ListView)rootView.findViewById(R.id.reviews_listview);
@@ -125,6 +136,19 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         this.movieId = movieId;
         getLoaderManager().initLoader(DETAIL_FRAGMENT_LOADER_ID_TRAILERS, null, this);
         getLoaderManager().initLoader(DETAIL_FRAGMENT_LOADER_ID_REVIEWS, null, this);
+    }
+
+    public void addToFavorites(View view) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        Set<String> favorites = sp.getStringSet(FAVORITES_KEY, null);
+        if(favorites == null) {
+            favorites = new HashSet<>();
+        }
+
+        Editor e = sp.edit();
+        favorites.add(movieId);
+        e.putStringSet(FAVORITES_KEY, favorites);
+        e.commit();
     }
 
     @Override
