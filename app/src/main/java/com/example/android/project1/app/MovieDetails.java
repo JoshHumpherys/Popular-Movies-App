@@ -16,7 +16,7 @@ public class MovieDetails implements Parcelable {
     }
 
     private MovieDetails(Parcel in) {
-        in.readStringArray(mDetails);
+        mDetails = in.createStringArray();
     }
 
     @Override

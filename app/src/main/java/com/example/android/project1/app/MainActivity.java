@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, new GridFragment(), GRID_FRAGMENT_TAG)
                     .commit();
+            getSupportFragmentManager().executePendingTransactions();
         }
     }
 

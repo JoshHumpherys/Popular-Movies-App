@@ -22,6 +22,8 @@ import android.widget.Toast;
 import com.example.android.project1.app.data.MoviesContract;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import app.project1.android.example.com.popularmoviesapp.R;
 
@@ -39,7 +41,9 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     private GridView mGridView;
     private GridAdapter mGridAdapter;
     private ArrayList<MovieDetails> mMovies;
+    private ArrayList<MovieDetails> mFavorites;
     private String sortOrderPreference;
+    private boolean toSortByFavorites = false;
 
     public interface Callback {
         public void onItemClick(String[] movieDetails);
@@ -53,20 +57,25 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         String sortOrder = getSortOrder(); // the current preferred sort order
         if(sortOrderPreference != null) {
             if (!sortOrderPreference.equals(sortOrder)) { // if the sort order has changed
-                sortOrderPreference = sortOrder;
+                if(!sortByFavorites()) {
+                    sortOrderPreference = sortOrder;
 
-                getLoaderManager().restartLoader(GRID_FRAGMENT_LOADER_ID, null, this);
-                getLoaderManager().initLoader(GRID_FRAGMENT_LOADER_ID, null, this);
+                    getLoaderManager().restartLoader(GRID_FRAGMENT_LOADER_ID, null, this);
+                    getLoaderManager().initLoader(GRID_FRAGMENT_LOADER_ID, null, this);
 
-                MatrixCursor matrixCursor = new MatrixCursor(MoviesContract.MoviesEntry.DETAIL_COLUMNS);
-                for (MovieDetails details : mMovies) {
-                    matrixCursor.addRow(details.mDetails);
+                    MatrixCursor matrixCursor = new MatrixCursor(MoviesContract.MoviesEntry.DETAIL_COLUMNS);
+                    for (MovieDetails details : mMovies) {
+                        matrixCursor.addRow(details.mDetails);
+                    }
+
+                    mGridAdapter.notifyDataSetChanged();
+                    mGridAdapter.swapCursor(matrixCursor);
+
+                    mGridView.smoothScrollToPosition(0);
                 }
-
-                mGridAdapter.notifyDataSetChanged();
-                mGridAdapter.swapCursor(matrixCursor);
-
-                mGridView.smoothScrollToPosition(0);
+                else {
+                    populateWithFavorites();
+                }
             }
         }
     }
@@ -88,7 +97,12 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
                 String[] details = new String[MoviesContract.MoviesEntry.DETAIL_COLUMNS.length];
                 for (int i = 0; i < details.length; i++) {
 //                    details[i] = mCursor.getString(mCursor.getColumnIndex(DetailFragment.DETAIL_COLUMNS[i]));
-                    details[i] = mMovies.get(position).mDetails[i];
+                    if(!sortByFavorites()) {
+                        details[i] = mMovies.get(position).mDetails[i];
+                    }
+                    else {
+                        details[i] = mFavorites.get(position).mDetails[i];
+                    }
                 }
                 ((Callback) getActivity()).onItemClick(details);
             }
@@ -100,7 +114,27 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(savedInstanceState != null && savedInstanceState.containsKey(MOVIE_KEY)) {
+        sortOrderPreference = getSortOrder();
+        Context context = getActivity();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        String sortKey = context.getString(R.string.pref_sort_key);
+        String favorites = context.getString(R.string.pref_sort_favorites);
+        if(sp.getString(sortKey, favorites).equals(favorites)) {
+            toSortByFavorites = true;
+            if(mMovies == null) {
+                if(isNetworkAvailable()) {
+                    FetchMoviesTask fmt = new FetchMoviesTask(getActivity());
+                    fmt.execute("3");
+                }
+                else {
+                    Toast.makeText(getActivity(), "No network connection", Toast.LENGTH_LONG).show();
+                }
+            }
+            else {
+                populateWithFavorites();
+            }
+        }
+        else if(savedInstanceState != null && savedInstanceState.containsKey(MOVIE_KEY)) {
             mMovies = (ArrayList<MovieDetails>)savedInstanceState.get(MOVIE_KEY);
 
             if(mMovies == null) {
@@ -123,7 +157,6 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
             else {
                 Toast.makeText(getActivity(), "No network connection", Toast.LENGTH_LONG).show();
             }
-            sortOrderPreference = getSortOrder();
         }
     }
 
@@ -134,18 +167,55 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     public void onItemInserted() {
-        getLoaderManager().initLoader(GRID_FRAGMENT_LOADER_ID, null, this);
+//        if(!toSortByFavorites) {
+            getLoaderManager().initLoader(GRID_FRAGMENT_LOADER_ID, null, this);
+//        }
+//        else {
+//            populateWithFavorites();
+//        }
+    }
+
+    private void populateWithFavorites() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        Set<String> set = sp.getStringSet(DetailFragment.FAVORITES_KEY, null);
+        List<String> list;
+        if(set != null) {
+            list = new ArrayList<>(set);
+        }
+        else {
+            Toast.makeText(getActivity(), "No favorites to show", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        mFavorites = new ArrayList();
+        MatrixCursor matrixCursor = new MatrixCursor(MoviesContract.MoviesEntry.DETAIL_COLUMNS);
+        for(int i = 0; i < mMovies.size(); i++) {
+            MovieDetails details = mMovies.get(i);
+            if(list.contains(details.mDetails[DetailFragment.COL_ID])) {
+                matrixCursor.addRow(details.mDetails);
+                mFavorites.add(details);
+            }
+        }
+
+        mGridAdapter.notifyDataSetChanged();
+        mGridAdapter.swapCursor(matrixCursor);
+
+        toSortByFavorites = false;
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String sortOrder = getSortOrder();
+        if(sortOrder.equals(getActivity().getString(R.string.pref_sort_favorites))) {
+            sortOrder = MoviesContract.MoviesEntry.COLUMN_POPULARITY + " DESC";
+        }
         return new CursorLoader(
                 getActivity(),
                 MoviesContract.MoviesEntry.CONTENT_URI,
                 null,
                 null,
                 null,
-                getSortOrder());
+                sortOrder);
     }
 
     @Override
@@ -171,6 +241,9 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
             }
             mMovies.add(new MovieDetails(values));
         }
+        if(toSortByFavorites) {
+            populateWithFavorites();
+        }
     }
 
     @Override
@@ -184,6 +257,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         String sortKey = context.getString(R.string.pref_sort_key);
         String popularity = context.getString(R.string.pref_sort_popularity);
         String rating = context.getString(R.string.pref_sort_rating);
+        String favorites = context.getString(R.string.pref_sort_favorites);
         String sortOrder;
         if(sp.getString(sortKey, popularity).equals(popularity)) {
             sortOrder = MoviesContract.MoviesEntry.COLUMN_POPULARITY + " DESC";
@@ -191,10 +265,21 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         else if(sp.getString(sortKey, rating).equals(rating)) {
             sortOrder = MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE + " DESC";
         }
+        else if(sp.getString(sortKey, favorites).equals(favorites)) {
+            sortOrder = favorites; // DO NOT SORT BY THIS SORT ORDER
+        }
         else {
-            sortOrder = sp.getString(sortKey, popularity);
+            sortOrder = MoviesContract.MoviesEntry.COLUMN_POPULARITY + " DESC";
         }
         return sortOrder;
+    }
+
+    public boolean sortByFavorites() {
+        Context context = getActivity();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        String sortKey = context.getString(R.string.pref_sort_key);
+        String favorites = context.getString(R.string.pref_sort_favorites);
+        return sp.getString(sortKey, favorites).equals(favorites);
     }
 
     // Based on a stackoverflow snippet

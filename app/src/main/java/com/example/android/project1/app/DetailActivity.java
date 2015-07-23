@@ -16,7 +16,10 @@ public class DetailActivity extends AppCompatActivity implements FetchDetailsTas
 
     @Override
     public void onInsertComplete(String movieId) {
-        ((DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAIL_FRAGMENT_TAG)).onItemInserted(movieId);
+        DetailFragment df = ((DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAIL_FRAGMENT_TAG));
+        if(df != null) {
+            df.onItemInserted(movieId);
+        }
     }
 
     @Override
