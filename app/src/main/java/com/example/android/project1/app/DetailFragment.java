@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -108,15 +109,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mListAdapterReviews = new DetailAdapterReviews(getActivity(), null, 0);
         reviews.setAdapter(mListAdapterReviews);
 
+        poster = (ImageView)rootView.findViewById(R.id.poster);
+        title = (TextView)rootView.findViewById(R.id.title);
+        overview = (TextView)rootView.findViewById(R.id.overview);
+        voteAverage = (TextView)rootView.findViewById(R.id.vote_average);
+        releaseDate = (TextView)rootView.findViewById(R.id.release_date);
+
         Bundle args = getArguments();
         if(args != null) {
             String[] details = args.getStringArray(MOVIE_DETAILS);
-
-            poster = (ImageView)rootView.findViewById(R.id.poster);
-            title = (TextView)rootView.findViewById(R.id.title);
-            overview = (TextView)rootView.findViewById(R.id.overview);
-            voteAverage = (TextView)rootView.findViewById(R.id.vote_average);
-            releaseDate = (TextView)rootView.findViewById(R.id.release_date);
 
             Picasso.with(getActivity())
                     .load("http://image.tmdb.org/t/p/w342/" + details[COL_POSTER])
@@ -129,6 +130,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
             FetchDetailsTask fdt = new FetchDetailsTask(getActivity());
             fdt.execute(details[COL_ID]);
+        } else {
+            Log.v(LOG_TAG, "In DetailFragment#onCreate args == null");
         }
 
         return rootView;

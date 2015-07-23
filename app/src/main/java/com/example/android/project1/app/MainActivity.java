@@ -5,25 +5,36 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import app.project1.android.example.com.popularmoviesapp.R;
 
 public class MainActivity extends AppCompatActivity
-        implements GridFragment.Callback, FetchMoviesTask.Callback {
+        implements GridFragment.Callback, FetchMoviesTask.Callback, FetchDetailsTask.Callback {
 
-    private static final String GRID_FRAGMENT_TAG = "GFTAG";
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+
+    public boolean mTwoPane;
+    public boolean toPopulateDetailFragment = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, new GridFragment(), GRID_FRAGMENT_TAG)
-                    .commit();
-            getSupportFragmentManager().executePendingTransactions();
+        if(findViewById(R.id.detail_container) != null) {
+            mTwoPane = true;
+            if(savedInstanceState == null) {
+                toPopulateDetailFragment = true;
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.detail_container, new DetailFragment(), DETAILFRAGMENT_TAG)
+                        .commit();
+            }
         }
+        else {
+            mTwoPane = false;
+        }
+
     }
 
     @Override
@@ -44,10 +55,11 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
-        } else if (id == R.id.action_refresh) {
-            refresh();
-            return true;
         }
+//        } else if (id == R.id.action_refresh) {
+//            refresh();
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -59,13 +71,55 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onItemClick(String[] movieDetails) {
-        Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra(DetailFragment.MOVIE_DETAILS, movieDetails);
-        startActivity(intent);
+        if(!mTwoPane) {
+            Intent intent = new Intent(this, DetailActivity.class);
+            intent.putExtra(DetailFragment.MOVIE_DETAILS, movieDetails);
+            startActivity(intent);
+        }
+        else {
+//            ((DetailFragment)getSupportFragmentManager().findFragmentById(R.id.detail_container))
+//                    .onItemInserted(movieDetails[DetailFragment.COL_ID]);
+            Bundle args = new Bundle();
+            args.putStringArray(DetailFragment.MOVIE_DETAILS, movieDetails);
+
+            DetailFragment df = new DetailFragment();
+            df.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                .replace(R.id.detail_container, df, DETAILFRAGMENT_TAG)
+                .commit();
+        }
     }
 
     @Override
-    public void onInsertComplete() {
-        ((GridFragment)getSupportFragmentManager().findFragmentByTag(GRID_FRAGMENT_TAG)).onItemInserted();
+    public void onInsertComplete(String movieId) {
+        GridFragment gf = ((GridFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_grid));
+        DetailFragment df = ((DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG));
+        if(gf != null) {
+            gf.onItemInserted();
+        }
+        if(mTwoPane && df != null) {
+            df.onItemInserted(movieId);
+        }
+    }
+
+    @Override
+    public void populateDetailFragment(String[] movieDetails) {
+        if(mTwoPane && toPopulateDetailFragment) {
+            toPopulateDetailFragment = false;
+            Bundle args = new Bundle();
+            args.putStringArray(DetailFragment.MOVIE_DETAILS, movieDetails);
+
+            DetailFragment df = new DetailFragment();
+            df.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.detail_container, df, DETAILFRAGMENT_TAG)
+                    .commit();
+        }
+    }
+
+    public void addToFavorites(View view) {
+        ((DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG)).addToFavorites(view);
     }
 }

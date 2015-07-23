@@ -31,10 +31,12 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
 
     private final Context mContext;
 
+    private String movieId;
+
     private String lastParam;
 
     public interface Callback {
-        public void onInsertComplete();
+        public void onInsertComplete(String movieId);
     }
 
     public FetchMoviesTask(Context context) {
@@ -77,6 +79,9 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
                 String backdropPath = movieObject.getString(BACKDROP_PATH);
                 int[] genreIds;
                 int id = movieObject.getInt(ID);
+                if(i == 0) {
+                    movieId = Integer.toString(id);
+                }
                 String originalLanguage = movieObject.getString(ORIGINAL_LANGUAGE);
                 String originalTitle = movieObject.getString(ORIGINAL_TITLE);
                 String overview = movieObject.getString(OVERVIEW);
@@ -201,6 +206,6 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        ((Callback)mContext).onInsertComplete();
+        ((Callback)mContext).onInsertComplete(movieId);
     }
 }

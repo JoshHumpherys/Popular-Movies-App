@@ -7,6 +7,8 @@ import android.database.MatrixCursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -47,6 +49,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
     public interface Callback {
         public void onItemClick(String[] movieDetails);
+        public void populateDetailFragment(String[] movieDetails);
     }
 
     public GridFragment() {}
@@ -57,9 +60,8 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         String sortOrder = getSortOrder(); // the current preferred sort order
         if(sortOrderPreference != null) {
             if (!sortOrderPreference.equals(sortOrder)) { // if the sort order has changed
+                sortOrderPreference = sortOrder;
                 if(!sortByFavorites()) {
-                    sortOrderPreference = sortOrder;
-
                     getLoaderManager().restartLoader(GRID_FRAGMENT_LOADER_ID, null, this);
                     getLoaderManager().initLoader(GRID_FRAGMENT_LOADER_ID, null, this);
 
@@ -97,10 +99,9 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
                 String[] details = new String[MoviesContract.MoviesEntry.DETAIL_COLUMNS.length];
                 for (int i = 0; i < details.length; i++) {
 //                    details[i] = mCursor.getString(mCursor.getColumnIndex(DetailFragment.DETAIL_COLUMNS[i]));
-                    if(!sortByFavorites()) {
+                    if (!sortByFavorites() || mFavorites == null) {
                         details[i] = mMovies.get(position).mDetails[i];
-                    }
-                    else {
+                    } else {
                         details[i] = mFavorites.get(position).mDetails[i];
                     }
                 }
@@ -167,12 +168,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     public void onItemInserted() {
-//        if(!toSortByFavorites) {
-            getLoaderManager().initLoader(GRID_FRAGMENT_LOADER_ID, null, this);
-//        }
-//        else {
-//            populateWithFavorites();
-//        }
+        getLoaderManager().initLoader(GRID_FRAGMENT_LOADER_ID, null, this);
     }
 
     private void populateWithFavorites() {
@@ -243,6 +239,29 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         }
         if(toSortByFavorites) {
             populateWithFavorites();
+        }
+
+        if(((MainActivity)getActivity()).toPopulateDetailFragment && ((MainActivity)getActivity()).mTwoPane) {
+            // based on a stackoverflow snippet to handle:
+            // java.lang.IllegalStateException: Can not perform this action inside of onLoadFinished
+            final int WHAT = 0;
+            Handler h = new Handler() {
+                @Override
+                public void handleMessage(Message m) {
+                    if(m.what == WHAT) {
+                        String[] details = new String[MoviesContract.MoviesEntry.DETAIL_COLUMNS.length];
+                        for (int i = 0; i < details.length; i++) {
+                            if (!sortByFavorites()) {
+                                details[i] = mMovies.get(0).mDetails[i];
+                            } else {
+                                details[i] = mFavorites.get(0).mDetails[i];
+                            }
+                        }
+                        ((GridFragment.Callback)getActivity()).populateDetailFragment(details);
+                    }
+                }
+            };
+            h.sendEmptyMessage(WHAT);
         }
     }
 
