@@ -63,17 +63,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
                 sortOrderPreference = sortOrder;
                 if(!sortByFavorites()) {
                     getLoaderManager().restartLoader(GRID_FRAGMENT_LOADER_ID, null, this);
-                    getLoaderManager().initLoader(GRID_FRAGMENT_LOADER_ID, null, this);
-
-                    MatrixCursor matrixCursor = new MatrixCursor(MoviesContract.MoviesEntry.DETAIL_COLUMNS);
-                    for (MovieDetails details : mMovies) {
-                        matrixCursor.addRow(details.mDetails);
-                    }
-
-                    mGridAdapter.notifyDataSetChanged();
-                    mGridAdapter.swapCursor(matrixCursor);
-
-                    mGridView.smoothScrollToPosition(0);
+//                    getLoaderManager().initLoader(GRID_FRAGMENT_LOADER_ID, null, this);
                 }
                 else {
                     populateWithFavorites();
@@ -101,7 +91,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 //                    details[i] = mCursor.getString(mCursor.getColumnIndex(DetailFragment.DETAIL_COLUMNS[i]));
                     if (!sortByFavorites() || mFavorites == null) {
                         details[i] = mMovies.get(position).mDetails[i];
-                    } else {
+                    } else{
                         details[i] = mFavorites.get(position).mDetails[i];
                     }
                 }
@@ -167,8 +157,13 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         outState.putParcelableArrayList(MOVIE_KEY, mMovies);
     }
 
-    public void onItemInserted() {
-        getLoaderManager().initLoader(GRID_FRAGMENT_LOADER_ID, null, this);
+    public void onItemInserted(boolean exceptionThrown) {
+        if(!exceptionThrown) {
+            getLoaderManager().initLoader(GRID_FRAGMENT_LOADER_ID, null, this);
+        }
+        else {
+            Toast.makeText(getActivity(), "Error with network call", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void populateWithFavorites() {
@@ -216,29 +211,42 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mGridAdapter.notifyDataSetChanged();
-        mGridAdapter.swapCursor(data);
-        mMovies = new ArrayList<MovieDetails>(data.getCount());
-        data.moveToPosition(-1);
-        while(data.moveToNext()) {
-            String[] values = new String[data.getColumnCount()];
-            for(int i = 0; i < data.getColumnCount(); i++) {
-                int type = data.getType(i);
-                switch(type) {
-                    case Cursor.FIELD_TYPE_STRING:
-                        values[i] = data.getString(i);
-                        break;
-                    case Cursor.FIELD_TYPE_FLOAT:
-                        values[i] = Float.toString(data.getFloat(i));
-                        break;
-                    case Cursor.FIELD_TYPE_INTEGER:
-                        values[i] = Integer.toString(data.getInt(i));
+        if(!sortByFavorites()) {
+            mGridAdapter.notifyDataSetChanged();
+            mGridAdapter.swapCursor(data);
+            mMovies = new ArrayList<MovieDetails>(data.getCount());
+            data.moveToPosition(-1);
+            while (data.moveToNext()) {
+                String[] values = new String[data.getColumnCount()];
+                for (int i = 0; i < data.getColumnCount(); i++) {
+                    int type = data.getType(i);
+                    switch (type) {
+                        case Cursor.FIELD_TYPE_STRING:
+                            values[i] = data.getString(i);
+                            break;
+                        case Cursor.FIELD_TYPE_FLOAT:
+                            values[i] = Float.toString(data.getFloat(i));
+                            break;
+                        case Cursor.FIELD_TYPE_INTEGER:
+                            values[i] = Integer.toString(data.getInt(i));
+                    }
                 }
+                mMovies.add(new MovieDetails(values));
             }
-            mMovies.add(new MovieDetails(values));
+            MatrixCursor matrixCursor = new MatrixCursor(MoviesContract.MoviesEntry.DETAIL_COLUMNS);
+            for (MovieDetails details : mMovies) {
+                matrixCursor.addRow(details.mDetails);
+            }
+
+            mGridAdapter.notifyDataSetChanged();
+            mGridAdapter.swapCursor(matrixCursor);
+
+            mGridView.smoothScrollToPosition(0);
         }
-        if(toSortByFavorites) {
-            populateWithFavorites();
+        else {
+            if (toSortByFavorites) {
+                populateWithFavorites();
+            }
         }
 
         if(((MainActivity)getActivity()).toPopulateDetailFragment && ((MainActivity)getActivity()).mTwoPane) {
@@ -251,7 +259,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
                     if(m.what == WHAT) {
                         String[] details = new String[MoviesContract.MoviesEntry.DETAIL_COLUMNS.length];
                         for (int i = 0; i < details.length; i++) {
-                            if (!sortByFavorites()) {
+                            if (!sortByFavorites() || mFavorites == null) {
                                 details[i] = mMovies.get(0).mDetails[i];
                             } else {
                                 details[i] = mFavorites.get(0).mDetails[i];

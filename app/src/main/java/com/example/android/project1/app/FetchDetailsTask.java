@@ -27,15 +27,16 @@ import java.util.Vector;
  */
 public class FetchDetailsTask extends AsyncTask<String, Void, Void> {
 
-    private final String LOG_TAG = FetchMoviesTask.class.getName();
+    private final String LOG_TAG = FetchDetailsTask.class.getName();
 
     private static final String API_KEY = "4be6ba35033283805916b8896c01b040";
 
     private final Context mContext;
     private String movieId;
+    private boolean exceptionThrown = false;
 
     public interface Callback {
-        public void onInsertComplete(String movieId);
+        public void onInsertComplete(String movieId, boolean exceptionThrown);
     }
 
     public FetchDetailsTask(Context context) {
@@ -134,6 +135,7 @@ public class FetchDetailsTask extends AsyncTask<String, Void, Void> {
         catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
+            exceptionThrown = true;
         }
     }
 
@@ -198,12 +200,16 @@ public class FetchDetailsTask extends AsyncTask<String, Void, Void> {
             insertJsonIntoDatabase(rawJsonStrTrailers, rawJsonStrReviews, id);
         } catch(IOException e) {
             Log.e(LOG_TAG, "Error ", e);
+            e.printStackTrace();
+            exceptionThrown = true;
         } catch(JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
+            exceptionThrown = true;
         } catch(NumberFormatException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
+            exceptionThrown = true;
         } finally {
             if(urlConnectionTrailers != null) {
                 urlConnectionTrailers.disconnect();
@@ -232,6 +238,6 @@ public class FetchDetailsTask extends AsyncTask<String, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        ((Callback)mContext).onInsertComplete(movieId);
+        ((Callback)mContext).onInsertComplete(movieId, exceptionThrown);
     }
 }

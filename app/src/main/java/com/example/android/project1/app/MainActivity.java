@@ -92,14 +92,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onInsertComplete(String movieId) {
+    public void onInsertComplete(String movieId, boolean exceptionThrown) {
         GridFragment gf = ((GridFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_grid));
         DetailFragment df = ((DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG));
         if(gf != null) {
-            gf.onItemInserted();
+            gf.onItemInserted(exceptionThrown);
         }
         if(mTwoPane && df != null) {
-            df.onItemInserted(movieId);
+            df.onItemInserted(movieId, exceptionThrown);
         }
     }
 

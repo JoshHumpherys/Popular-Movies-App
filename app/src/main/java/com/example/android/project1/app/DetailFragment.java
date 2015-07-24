@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.project1.app.data.MoviesContract;
 import com.example.android.project1.app.data.MoviesContract.MoviesEntry;
@@ -137,8 +138,12 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         return rootView;
     }
 
-    public void onItemInserted(String movieId) {
+    public void onItemInserted(String movieId, boolean exceptionThrow) {
         this.movieId = movieId;
+        if(exceptionThrow) {
+            Toast.makeText(getActivity(), "Error with network call", Toast.LENGTH_SHORT).show();
+            return;
+        }
         if(addToFavoritesScheduled == true) {
             addToFavorites(favorites);
         }

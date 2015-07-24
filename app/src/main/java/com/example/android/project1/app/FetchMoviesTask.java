@@ -32,11 +32,11 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
     private final Context mContext;
 
     private String movieId;
-
     private String lastParam;
+    private boolean exceptionThrown = false;
 
     public interface Callback {
-        public void onInsertComplete(String movieId);
+        public void onInsertComplete(String movieId, boolean exceptionThrown);
     }
 
     public FetchMoviesTask(Context context) {
@@ -121,6 +121,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
         catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
+            exceptionThrown = true;
         }
     }
 
@@ -182,12 +183,16 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
             }
         } catch(IOException e) {
             Log.e(LOG_TAG, "Error ", e);
+            e.printStackTrace();
+            exceptionThrown = true;
         } catch(JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
+            exceptionThrown = true;
         } catch(NumberFormatException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
+            exceptionThrown = true;
         } finally {
             if(urlConnection != null) {
                 urlConnection.disconnect();
@@ -206,6 +211,6 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        ((Callback)mContext).onInsertComplete(movieId);
+        ((Callback)mContext).onInsertComplete(movieId, exceptionThrown);
     }
 }
