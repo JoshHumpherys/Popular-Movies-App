@@ -154,7 +154,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
             final String API_KEY_PARAM = "api_key";
 
             int maxPage = Integer.parseInt(pageQuery);
-            for(int i = 1; i < maxPage; i++) {
+            for(int i = 1; i <= maxPage; i++) {
                 Uri builtUri = Uri.parse(MOVIES_BASE_URL).buildUpon()
                         .appendQueryParameter(PAGE_PARAM, Integer.toString(i))
                         .appendQueryParameter(API_KEY_PARAM, API_KEY)

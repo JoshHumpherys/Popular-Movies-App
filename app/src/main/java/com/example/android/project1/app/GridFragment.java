@@ -70,6 +70,15 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
                 }
             }
         }
+        else {
+            if(!sortByFavorites()) {
+                getLoaderManager().restartLoader(GRID_FRAGMENT_LOADER_ID, null, this);
+//                getLoaderManager().initLoader(GRID_FRAGMENT_LOADER_ID, null, this);
+            }
+            else {
+                populateWithFavorites();
+            }
+        }
     }
 
     @Override
@@ -110,7 +119,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         String sortKey = context.getString(R.string.pref_sort_key);
         String favorites = context.getString(R.string.pref_sort_favorites);
-        if(sp.getString(sortKey, favorites).equals(favorites)) {
+        if(sp.getString(sortKey, favorites).equals(favorites) && sp.getString(sortKey, null) != null) {
             toSortByFavorites = true;
             if(mMovies == null) {
                 if(isNetworkAvailable()) {
@@ -159,7 +168,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
     public void onItemInserted(boolean exceptionThrown) {
         if(!exceptionThrown) {
-            getLoaderManager().initLoader(GRID_FRAGMENT_LOADER_ID, null, this);
+            getLoaderManager().restartLoader(GRID_FRAGMENT_LOADER_ID, null, this);
         }
         else {
             Toast.makeText(getActivity(), "Error with network call", Toast.LENGTH_SHORT).show();
@@ -197,6 +206,9 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String sortOrder = getSortOrder();
+        if(sortOrder == null) {
+            sortOrder = MoviesContract.MoviesEntry.COLUMN_POPULARITY + " DESC";
+        }
         if(sortOrder.equals(getActivity().getString(R.string.pref_sort_favorites))) {
             sortOrder = MoviesContract.MoviesEntry.COLUMN_POPULARITY + " DESC";
         }
@@ -282,6 +294,9 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         Context context = getActivity();
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String sortKey = context.getString(R.string.pref_sort_key);
+        if(sp.getString(sortKey, null) == null) {
+            return null;
+        }
         String popularity = context.getString(R.string.pref_sort_popularity);
         String rating = context.getString(R.string.pref_sort_rating);
         String favorites = context.getString(R.string.pref_sort_favorites);
@@ -306,6 +321,9 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         String sortKey = context.getString(R.string.pref_sort_key);
         String favorites = context.getString(R.string.pref_sort_favorites);
+        if(sp.getString(sortKey, null) == null) {
+            return false;
+        }
         return sp.getString(sortKey, favorites).equals(favorites);
     }
 
