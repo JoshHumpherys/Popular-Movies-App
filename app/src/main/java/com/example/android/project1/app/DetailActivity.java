@@ -3,7 +3,6 @@ package com.example.android.project1.app;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 
 import app.project1.android.example.com.popularmoviesapp.R;
 
@@ -42,7 +41,7 @@ public class DetailActivity extends AppCompatActivity implements FetchDetailsTas
                 .commit();
     }
 
-    public void addToFavorites(View view) {
-        ((DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAIL_FRAGMENT_TAG)).addToFavorites(view);
-    }
+//    public void addToFavorites(View view) {
+//        ((DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAIL_FRAGMENT_TAG)).addToFavorites();
+//    }
 }

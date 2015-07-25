@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import app.project1.android.example.com.popularmoviesapp.R;
 
@@ -119,7 +118,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void addToFavorites(View view) {
-        ((DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG)).addToFavorites(view);
-    }
+//    public void addToFavorites() {
+//        ((DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG)).addToFavorites();
+//    }
 }
