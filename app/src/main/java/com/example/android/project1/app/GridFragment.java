@@ -188,21 +188,19 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         }
 
         mFavorites = new ArrayList();
-        if(mMovies != null) {
-            MatrixCursor matrixCursor = new MatrixCursor(MoviesContract.MoviesEntry.DETAIL_COLUMNS);
-            for (int i = 0; i < mMovies.size(); i++) {
-                MovieDetails details = mMovies.get(i);
-                if (list.contains(details.mDetails[DetailFragment.COL_ID])) {
-                    matrixCursor.addRow(details.mDetails);
-                    mFavorites.add(details);
-                }
+        MatrixCursor matrixCursor = new MatrixCursor(MoviesContract.MoviesEntry.DETAIL_COLUMNS);
+        for(int i = 0; i < mMovies.size(); i++) {
+            MovieDetails details = mMovies.get(i);
+            if(list.contains(details.mDetails[DetailFragment.COL_ID])) {
+                matrixCursor.addRow(details.mDetails);
+                mFavorites.add(details);
             }
-
-            mGridAdapter.notifyDataSetChanged();
-            mGridAdapter.swapCursor(matrixCursor);
-
-            toSortByFavorites = false;
         }
+
+        mGridAdapter.notifyDataSetChanged();
+        mGridAdapter.swapCursor(matrixCursor);
+
+        toSortByFavorites = false;
     }
 
     @Override
@@ -225,40 +223,42 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mGridAdapter.notifyDataSetChanged();
-        mGridAdapter.swapCursor(data);
-        mMovies = new ArrayList<MovieDetails>(data.getCount());
-        data.moveToPosition(-1);
-        while (data.moveToNext()) {
-            String[] values = new String[data.getColumnCount()];
-            for (int i = 0; i < data.getColumnCount(); i++) {
-                int type = data.getType(i);
-                switch (type) {
-                    case Cursor.FIELD_TYPE_STRING:
-                        values[i] = data.getString(i);
-                        break;
-                    case Cursor.FIELD_TYPE_FLOAT:
-                        values[i] = Float.toString(data.getFloat(i));
-                        break;
-                    case Cursor.FIELD_TYPE_INTEGER:
-                        values[i] = Integer.toString(data.getInt(i));
+        if(!sortByFavorites()) {
+            mGridAdapter.notifyDataSetChanged();
+            mGridAdapter.swapCursor(data);
+            mMovies = new ArrayList<MovieDetails>(data.getCount());
+            data.moveToPosition(-1);
+            while (data.moveToNext()) {
+                String[] values = new String[data.getColumnCount()];
+                for (int i = 0; i < data.getColumnCount(); i++) {
+                    int type = data.getType(i);
+                    switch (type) {
+                        case Cursor.FIELD_TYPE_STRING:
+                            values[i] = data.getString(i);
+                            break;
+                        case Cursor.FIELD_TYPE_FLOAT:
+                            values[i] = Float.toString(data.getFloat(i));
+                            break;
+                        case Cursor.FIELD_TYPE_INTEGER:
+                            values[i] = Integer.toString(data.getInt(i));
+                    }
                 }
+                mMovies.add(new MovieDetails(values));
             }
-            mMovies.add(new MovieDetails(values));
-        }
-        MatrixCursor matrixCursor = new MatrixCursor(MoviesContract.MoviesEntry.DETAIL_COLUMNS);
-        for (MovieDetails details : mMovies) {
-            matrixCursor.addRow(details.mDetails);
-        }
+            MatrixCursor matrixCursor = new MatrixCursor(MoviesContract.MoviesEntry.DETAIL_COLUMNS);
+            for (MovieDetails details : mMovies) {
+                matrixCursor.addRow(details.mDetails);
+            }
 
-        if (toSortByFavorites) {
-            populateWithFavorites();
-        }
-        else {
             mGridAdapter.notifyDataSetChanged();
             mGridAdapter.swapCursor(matrixCursor);
 
             mGridView.smoothScrollToPosition(0);
+        }
+        else {
+            if (toSortByFavorites) {
+                populateWithFavorites();
+            }
         }
 
         if(((MainActivity)getActivity()).toPopulateDetailFragment && ((MainActivity)getActivity()).mTwoPane) {

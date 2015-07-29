@@ -10,7 +10,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -20,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -80,7 +80,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     private ListView trailers;
     private ListView reviews;
-//    private Button favorites;
+    private Button favorites;
 
     private String movieId;
 
@@ -89,15 +89,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addToFavorites();
- ;          }
-        });
-
-//        favorites = (Button)rootView.findViewById(R.id.favorites_button);
+        favorites = (Button)rootView.findViewById(R.id.favorites_button);
 
         trailers = (ListView)rootView.findViewById(R.id.trailers_listview);
         reviews = (ListView)rootView.findViewById(R.id.reviews_listview);
@@ -153,13 +145,13 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             return;
         }
         if(addToFavoritesScheduled == true) {
-            addToFavorites();
+            addToFavorites(favorites);
         }
         getLoaderManager().initLoader(DETAIL_FRAGMENT_LOADER_ID_TRAILERS, null, this);
         getLoaderManager().initLoader(DETAIL_FRAGMENT_LOADER_ID_REVIEWS, null, this);
     }
 
-    public void addToFavorites() {
+    public void addToFavorites(View view) {
         if(movieId == null) {
             addToFavoritesScheduled = true;
             return;
