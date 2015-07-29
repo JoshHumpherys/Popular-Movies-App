@@ -19,7 +19,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -80,7 +81,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     private ListView trailers;
     private ListView reviews;
-    private Button favorites;
+    private CheckBox favorites;
 
     private String movieId;
 
@@ -89,7 +90,18 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        favorites = (Button)rootView.findViewById(R.id.favorites_button);
+        favorites = (CheckBox)rootView.findViewById(R.id.favorites_button);
+        favorites.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    addToFavorites(buttonView);
+                }
+                else {
+//                    removeFromFavorites(buttonView);
+                }
+            }
+        });
 
         trailers = (ListView)rootView.findViewById(R.id.trailers_listview);
         reviews = (ListView)rootView.findViewById(R.id.reviews_listview);

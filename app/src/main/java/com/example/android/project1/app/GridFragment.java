@@ -179,7 +179,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         Set<String> set = sp.getStringSet(DetailFragment.FAVORITES_KEY, null);
         List<String> list;
-        if(set != null) {
+        if(set != null && mMovies != null) {
             list = new ArrayList<>(set);
         }
         else {
