@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import app.project1.android.example.com.popularmoviesapp.R;
 
@@ -103,23 +102,23 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void populateDetailFragment(String[] movieDetails) {
-        if(mTwoPane && toPopulateDetailFragment) {
-            toPopulateDetailFragment = false;
-            Bundle args = new Bundle();
-            args.putStringArray(DetailFragment.MOVIE_DETAILS, movieDetails);
-
-            DetailFragment df = new DetailFragment();
-            df.setArguments(args);
-
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.detail_container, df, DETAILFRAGMENT_TAG)
-                    .commit();
-        }
-    }
-
-    public void addToFavorites(View view) {
-        ((DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG)).addToFavorites(view);
-    }
+//    @Override
+//    public void populateDetailFragment(String[] movieDetails) {
+//        if(mTwoPane && toPopulateDetailFragment) {
+//            toPopulateDetailFragment = false;
+//            Bundle args = new Bundle();
+//            args.putStringArray(DetailFragment.MOVIE_DETAILS, movieDetails);
+//
+//            DetailFragment df = new DetailFragment();
+//            df.setArguments(args);
+//
+//            getSupportFragmentManager().beginTransaction()
+//                    .replace(R.id.detail_container, df, DETAILFRAGMENT_TAG)
+//                    .commit();
+//        }
+//    }
+//
+//    public void addToFavorites(View view) {
+//        ((DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG)).addToFavorites(view);
+//    }
 }

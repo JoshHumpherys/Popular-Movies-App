@@ -1,15 +1,13 @@
 package com.example.android.project1.app;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -24,14 +22,10 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.android.project1.app.data.MoviesContract;
 import com.example.android.project1.app.data.MoviesContract.MoviesEntry;
 import com.squareup.picasso.Picasso;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import app.project1.android.example.com.popularmoviesapp.R;
 
@@ -48,6 +42,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public static final String FAVORITES_KEY = "favorites";
 
     private boolean addToFavoritesScheduled = false;
+    private boolean removeFromFavoritesScheduled = false;
 
     public static final String[] DETAIL_COLUMNS = {
             "_ID",
@@ -63,7 +58,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             MoviesEntry.COLUMN_TITLE,
             MoviesEntry.COLUMN_VIDEO,
             MoviesEntry.COLUMN_VOTE_AVERAGE,
-            MoviesEntry.COLUMN_VOTE_COUNT
+            MoviesEntry.COLUMN_VOTE_COUNT,
+            MoviesEntry.COLUMN_FAVORITE
     };
 
     public static final int COL_ID = 3;
@@ -72,6 +68,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public static final int COL_OVERVIEW = 6;
     public static final int COL_VOTE_AVERAGE = 12;
     public static final int COL_RELEASE_DATE = 7;
+    public static final int COL_FAVORITE = 14;
 
     private ImageView poster;
     private TextView title, overview, voteAverage, releaseDate;
@@ -98,7 +95,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                     addToFavorites(buttonView);
                 }
                 else {
-//                    removeFromFavorites(buttonView);
+                    removeFromFavorites(buttonView);
                 }
             }
         });
@@ -132,6 +129,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         if(args != null) {
             String[] details = args.getStringArray(MOVIE_DETAILS);
 
+            movieId = details[COL_ID];
+
             Picasso.with(getActivity())
                     .load("http://image.tmdb.org/t/p/w342/" + details[COL_POSTER])
                     .into(poster);
@@ -140,6 +139,13 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             overview.setText(details[COL_OVERVIEW]);
             voteAverage.setText(details[COL_VOTE_AVERAGE] + "/10");
             releaseDate.setText(details[COL_RELEASE_DATE].substring(0, 4));
+
+            String favorited = details[COL_FAVORITE];
+            if(favorited != null) {
+                if(favorited.equals("1")) {
+                    favorites.setChecked(true);
+                }
+            }
 
             FetchDetailsTask fdt = new FetchDetailsTask(getActivity());
             fdt.execute(details[COL_ID]);
@@ -152,13 +158,16 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     public void onItemInserted(String movieId, boolean exceptionThrow) {
         this.movieId = movieId;
-        if(exceptionThrow) {
-            Toast.makeText(getActivity(), "Error with network call", Toast.LENGTH_SHORT).show();
-            return;
-        }
         if(addToFavoritesScheduled == true) {
             addToFavorites(favorites);
         }
+        else if(removeFromFavoritesScheduled == true) {
+            removeFromFavorites(favorites);
+        }
+//        if(exceptionThrow) {
+//            Toast.makeText(getActivity(), "Error with network call", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
         getLoaderManager().initLoader(DETAIL_FRAGMENT_LOADER_ID_TRAILERS, null, this);
         getLoaderManager().initLoader(DETAIL_FRAGMENT_LOADER_ID_REVIEWS, null, this);
     }
@@ -168,16 +177,19 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             addToFavoritesScheduled = true;
             return;
         }
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        Set<String> favorites = sp.getStringSet(FAVORITES_KEY, null);
-        if(favorites == null) {
-            favorites = new HashSet<>();
-        }
+        ContentValues values = new ContentValues();
+        values.put(MoviesContract.MoviesEntry.COLUMN_FAVORITE, "1");
+        getActivity().getContentResolver().update(MoviesEntry.CONTENT_URI, values, MoviesEntry.COLUMN_ID + " = " + movieId, null);
+    }
 
-        Editor e = sp.edit();
-        favorites.add(movieId);
-        e.putStringSet(FAVORITES_KEY, favorites);
-        e.commit();
+    public void removeFromFavorites(View view) {
+        if(movieId == null) {
+            removeFromFavoritesScheduled = true;
+            return;
+        }
+        ContentValues values = new ContentValues();
+        values.put(MoviesEntry.COLUMN_FAVORITE, "0");
+        getActivity().getContentResolver().update(MoviesEntry.CONTENT_URI, values, MoviesEntry.COLUMN_ID + " = " + movieId, null);
     }
 
     @Override

@@ -12,7 +12,7 @@ import com.example.android.project1.app.data.MoviesContract.ReviewsEntry;
  * Created by Admin-HHE on 7/9/2015.
  */
 public class MoviesDbHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
 
     static final String DATABASE_NAME = "movie.db";
 
@@ -39,6 +39,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 MoviesEntry.COLUMN_VIDEO + " INTEGER NOT NULL, " +
                 MoviesEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL, " +
                 MoviesEntry.COLUMN_VOTE_COUNT + " REAL NOT NULL, " +
+                MoviesEntry.COLUMN_FAVORITE + " INTEGER, " +
                 " UNIQUE (" + MoviesEntry.COLUMN_ID + ") ON CONFLICT REPLACE);";
 
         final String SQL_CREATE_TRAILER_TABLE =

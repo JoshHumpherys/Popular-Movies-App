@@ -220,8 +220,22 @@ public class MoviesProvider extends ContentProvider {
                 int returnCount = 0;
                 try {
                     for(ContentValues value : values) {
+//                        Log.e(MoviesProvider.class.getName(), value.toString());
+//                        long _id = db.insertWithOnConflict(MoviesContract.MoviesEntry.TABLE_NAME, null, value, SQLiteDatabase.CONFLICT_ABORT);
+//                        if(_id == -1) {
+//                            _id = db.update(MoviesContract.MoviesEntry.TABLE_NAME, value, null, null);
+//                        }
+//                        long _id;
+//                        try {
+//                            _id = db.update(MoviesContract.MoviesEntry.TABLE_NAME, value, null, null);
+//                        }
+//                        catch(SQLiteConstraintException e) {
+//                            _id = db.insert(MoviesContract.MoviesEntry.TABLE_NAME, null, value);
+//                        }
+//                        long _id = db.update(MoviesContract.MoviesEntry.TABLE_NAME, value, null, null);
+//                        db.insertWithOnConflict(MoviesContract.MoviesEntry.TABLE_NAME, null, value, SQLiteDatabase.CONFLICT_IGNORE);
                         long _id = db.insert(MoviesContract.MoviesEntry.TABLE_NAME, null, value);
-                        if(_id != -1) {
+                        if (_id != -1) {
                             returnCount++;
                         }
                     }

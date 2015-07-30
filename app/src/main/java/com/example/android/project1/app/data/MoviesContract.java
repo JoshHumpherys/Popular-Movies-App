@@ -41,6 +41,7 @@ public class MoviesContract {
         public static final String COLUMN_VIDEO = "video";
         public static final String COLUMN_VOTE_AVERAGE = "vote_average";
         public static final String COLUMN_VOTE_COUNT = "vote_count";
+        public static final String COLUMN_FAVORITE = "favorite";
 
         public static final String[] DETAIL_COLUMNS = {
                 "_ID",
@@ -56,7 +57,8 @@ public class MoviesContract {
                 COLUMN_TITLE,
                 COLUMN_VIDEO,
                 COLUMN_VOTE_AVERAGE,
-                COLUMN_VOTE_COUNT
+                COLUMN_VOTE_COUNT,
+                COLUMN_FAVORITE
         };
 
         public static Uri buildMovieUri(long id) {
